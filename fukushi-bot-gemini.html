@@ -519,6 +519,15 @@ async function sendMessage() {
     const data = await response.json();
     removeTyping();
 
+    // エラーレスポンスの確認
+    if (data.error) {
+      addMessage('bot', 'エラー：' + data.error.message);
+      isLoading = false;
+      sendBtn.disabled = false;
+      inputBox.focus();
+      return;
+    }
+
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'うまく回答できませんでした。もう一度試してみてください。';
     addMessage('bot', reply);
     messages.push({ role: 'assistant', content: reply });
