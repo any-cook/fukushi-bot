@@ -161,6 +161,12 @@
   .client-memo { font-size: 12px; color: var(--muted); line-height: 1.7; white-space: pre-wrap; }
   .client-label { font-size: 11px; font-weight: 500; color: var(--main); margin-bottom: 2px; }
   .empty-msg { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0; }
+  .csv-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+  .csv-btn { flex: 1; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 600; font-family: "Noto Sans JP",sans-serif; cursor: pointer; border: 2px solid; transition: opacity 0.2s; }
+  .csv-btn:hover { opacity: 0.8; }
+  .csv-export { background: var(--teal-light, #C8F4F2); color: #2BB5AC; border-color: #4ECDC4; }
+  .csv-import { background: var(--main-pale); color: var(--accent); border-color: var(--main-light); }
+  #csvFileInput { display: none; }
 
   /* PINダイアログ */
   .pin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
@@ -229,10 +235,21 @@
         <textarea id="clientMemo" placeholder="例：担当者は田中様。納期は必ず2週間前に確認すること。アレルギー対応品の製造実績あり。"></textarea>
       </div>
       <div class="form-group">
-        <label>連絡先・担当者</label>
-        <input type="text" id="clientContact" placeholder="例：田中様 / 090-XXXX-XXXX">
+        <label>担当者名</label>
+        <input type="text" id="clientContact" placeholder="例：田中様">
+      </div>
+      <div class="form-group">
+        <label>電話番号</label>
+        <input type="text" id="clientPhone" placeholder="例：090-XXXX-XXXX">
       </div>
       <button class="save-btn" onclick="saveClient()">💾 保存する</button>
+    </div>
+    <div class="csv-bar">
+      <button class="csv-btn csv-export" onclick="exportCSV()">📥 CSVエクスポート</button>
+      <label class="csv-btn csv-import" style="text-align:center;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        📤 CSVインポート
+        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)">
+      </label>
     </div>
     <div class="client-list" id="clientList">
       <p class="empty-msg">取引先を追加してください</p>
@@ -387,7 +404,8 @@ function renderClientList() {
           <button class="del-btn" onclick="deleteClient('${c.id}')">削除</button>
         </div>
       </div>
-      ${c.contact ? `<div class="client-label">👤 担当者・連絡先</div><div class="client-memo">${c.contact}</div>` : ''}
+      ${c.contact ? `<div class="client-label">👤 担当者</div><div class="client-memo">${c.contact}</div>` : ''}
+      ${c.phone ? `<div class="client-label" style="margin-top:6px">📞 電話番号</div><div class="client-memo">${c.phone}</div>` : ''}
       ${c.memo ? `<div class="client-label" style="margin-top:8px">📝 対応メモ・注意事項</div><div class="client-memo">${c.memo}</div>` : ''}
     </div>
   `).join('');
@@ -397,17 +415,19 @@ window.saveClient = async function() {
   const name = document.getElementById('clientName').value.trim();
   const memo = document.getElementById('clientMemo').value.trim();
   const contact = document.getElementById('clientContact').value.trim();
+  const phone = document.getElementById('clientPhone').value.trim();
   const editId = document.getElementById('editId').value;
   if (!name) { alert('会社名を入力してください'); return; }
   try {
     if (editId) {
-      await updateDoc(doc(db, "clients", editId), { name, memo, contact });
+      await updateDoc(doc(db, "clients", editId), { name, memo, contact, phone });
     } else {
-      await addDoc(collection(db, "clients"), { name, memo, contact, createdAt: new Date() });
+      await addDoc(collection(db, "clients"), { name, memo, contact, phone, createdAt: new Date() });
     }
     document.getElementById('clientName').value = '';
     document.getElementById('clientMemo').value = '';
     document.getElementById('clientContact').value = '';
+    document.getElementById('clientPhone').value = '';
     document.getElementById('editId').value = '';
     document.getElementById('formTitle').textContent = '➕ 取引先を追加';
     await loadClients();
@@ -420,6 +440,7 @@ window.editClient = function(id) {
   document.getElementById('clientName').value = c.name || '';
   document.getElementById('clientMemo').value = c.memo || '';
   document.getElementById('clientContact').value = c.contact || '';
+  document.getElementById('clientPhone').value = c.phone || '';
   document.getElementById('editId').value = id;
   document.getElementById('formTitle').textContent = '✏️ 取引先を編集';
   window.scrollTo(0, 0);
@@ -548,7 +569,8 @@ window.sendMessage = async function() {
       systemPrompt += '\n\n【取引先情報】\n以下の取引先情報を参考に回答してください：\n';
       clientsData.forEach(c => {
         systemPrompt += `\n■ ${c.name}\n`;
-        if (c.contact) systemPrompt += `  担当者・連絡先：${c.contact}\n`;
+        if (c.contact) systemPrompt += `  担当者：${c.contact}\n`;
+        if (c.phone) systemPrompt += `  電話番号：${c.phone}\n`;
         if (c.memo) systemPrompt += `  対応メモ・注意事項：${c.memo}\n`;
       });
     }
@@ -589,6 +611,64 @@ window.sendMessage = async function() {
     console.error(err);
   }
   isLoading = false; sendBtn.disabled = false; inputBox.focus();
+}
+
+// CSVエクスポート
+window.exportCSV = function() {
+  if (clientsData.length === 0) { alert('エクスポートするデータがありません'); return; }
+  const header = ['会社名', '担当者名', '電話番号', '対応メモ・注意事項'];
+  const rows = clientsData.map(c => [
+    c.name || '',
+    c.contact || '',
+    c.phone || '',
+    c.memo || ''
+  ].map(v => '"' + v.replace(/"/g, '""').replace(/\n/g, ' ') + '"'));
+  const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '取引先リスト.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// CSVインポート
+window.importCSV = async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  const lines = text.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { alert('データが見つかりませんでした'); return; }
+  
+  // ヘッダー行をスキップ
+  const dataLines = lines.slice(1);
+  let count = 0;
+  for (const line of dataLines) {
+    // CSV解析（ダブルクォート対応）
+    const cols = [];
+    let cur = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') {
+        if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+        else { inQuote = !inQuote; }
+      } else if (line[i] === ',' && !inQuote) {
+        cols.push(cur); cur = '';
+      } else { cur += line[i]; }
+    }
+    cols.push(cur);
+    const name = (cols[0] || '').trim();
+    const contact = (cols[1] || '').trim();
+    const phone = (cols[2] || '').trim();
+    const memo = (cols[3] || '').trim();
+    if (!name) continue;
+    try {
+      await addDoc(collection(db, "clients"), { name, contact, phone, memo, createdAt: new Date() });
+      count++;
+    } catch(e) { console.error(e); }
+  }
+  alert(count + '件のデータをインポートしました');
+  event.target.value = '';
+  await loadClients();
 }
 
 // 初期読み込み
