@@ -166,6 +166,7 @@ textarea::placeholder{color:#D4A0B0}
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
 var ADMIN_PIN = "1234";
 var clientsData = [];
@@ -200,6 +201,22 @@ try {
   var nippoApp = firebase.initializeApp(nippoConfig, "nippo");
   nippoDB = firebase.firestore(nippoApp);
 } catch(e) { console.warn("nippo DB error:", e); }
+
+// スケジュールDB設定
+var scheduleConfig = {
+  apiKey: "AIzaSyDrZNjszozY7J_RvcPI3JaB9J1VLuGRuGk",
+  authDomain: "factory-schedule-1e5d5.firebaseapp.com",
+  databaseURL: "https://factory-schedule-1e5d5-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "factory-schedule-1e5d5",
+  storageBucket: "factory-schedule-1e5d5.firebasestorage.app",
+  messagingSenderId: "926690797990",
+  appId: "1:926690797990:web:a2e5413ed5c3d01a42c767"
+};
+var scheduleDB = null;
+try {
+  var scheduleApp = firebase.initializeApp(scheduleConfig, "schedule");
+  scheduleDB = firebase.database(scheduleApp);
+} catch(e) { console.warn("schedule DB error:", e); }
 
 // 製造日報取得
 function getTodayStr() {
@@ -304,6 +321,51 @@ function formatNippoForAI(reports) {
     });
     if (r.otherNotes) text += '備考：' + r.otherNotes + '\n';
     text += '\n';
+  });
+  return text;
+}
+
+// スケジュール取得
+function fetchScheduleData(targetDate, fromDate, toDate) {
+  if (!scheduleDB) return Promise.resolve([]);
+  return scheduleDB.ref('schedules').once('value').then(function(snapshot) {
+    var schedules = [];
+    snapshot.forEach(function(child) {
+      var s = child.val();
+      if (!s.mfgDate && !s.shipDate) return;
+      var checkDate = s.mfgDate || s.shipDate;
+      if (targetDate && (s.mfgDate === targetDate || s.shipDate === targetDate)) { schedules.push(s); return; }
+      if (fromDate && toDate) {
+        if ((s.mfgDate && s.mfgDate >= fromDate && s.mfgDate <= toDate) ||
+            (s.shipDate && s.shipDate >= fromDate && s.shipDate <= toDate)) {
+          schedules.push(s); return;
+        }
+      }
+      if (!targetDate && !fromDate) schedules.push(s);
+    });
+    schedules.sort(function(a,b) {
+      var da = a.mfgDate || a.shipDate || '';
+      var db2 = b.mfgDate || b.shipDate || '';
+      return da.localeCompare(db2);
+    });
+    return schedules.slice(0, 30);
+  }).catch(function() { return []; });
+}
+
+function formatScheduleForAI(schedules) {
+  if (schedules.length === 0) return '該当期間のスケジュールデータはありません。';
+  var text = '';
+  schedules.forEach(function(s) {
+    text += '【' + (s.title || '未定') + '】
+';
+    if (s.mfgDate) text += '  製造日：' + s.mfgDate + '
+';
+    if (s.shipDate) text += '  出荷日：' + s.shipDate + '
+';
+    if (s.note) text += '  備考：' + s.note + '
+';
+    text += '
+';
   });
   return text;
 }
@@ -525,7 +587,27 @@ function sendMessage() {
     nippoPromise = fetchNippoData(null, null, null);
   }
 
-  nippoPromise.then(function(nippoReports) {
+  var scheduleKeywords = ['スケジュール','予定','出荷','納期','いつ','計画','今週','来週','今月','来月'];
+  var isScheduleQuery = scheduleKeywords.some(function(k) { return text.includes(k); });
+  var scheduleDateInfo = isScheduleQuery ? parseDateFromText(text) : null;
+
+  var schedulePromise;
+  if (!isScheduleQuery) {
+    schedulePromise = Promise.resolve([]);
+  } else if (scheduleDateInfo && scheduleDateInfo.type === 'single') {
+    schedulePromise = fetchScheduleData(scheduleDateInfo.date, null, null);
+  } else if (scheduleDateInfo && scheduleDateInfo.type === 'range') {
+    schedulePromise = fetchScheduleData(null, scheduleDateInfo.from, scheduleDateInfo.to);
+  } else {
+    // デフォルトは今日から1ヶ月先
+    var from = getTodayStr();
+    var to = new Date(); to.setMonth(to.getMonth()+1);
+    schedulePromise = fetchScheduleData(null, from, to.toISOString().slice(0,10));
+  }
+
+  Promise.all([nippoPromise, schedulePromise]).then(function(results) {
+    var nippoReports = results[0];
+    var scheduleData = results[1];
     var systemPrompt = SYSTEM_PROMPT_BASE;
     if (clientsData.length > 0) {
       systemPrompt += '\n\n【取引先情報】\n';
@@ -541,6 +623,12 @@ function sendMessage() {
       systemPrompt += '\n\n【製造日報（' + dateLabel + '）】\n' + formatNippoForAI(nippoReports);
     } else if (isNippoQuery && nippoReports.length === 0) {
       systemPrompt += '\n\n【製造日報】該当期間の製造日報データはありませんでした。';
+    }
+    if (isScheduleQuery && scheduleData.length > 0) {
+      var schedLabel = scheduleDateInfo ? (scheduleDateInfo.type === 'single' ? scheduleDateInfo.date : scheduleDateInfo.type === 'range' ? scheduleDateInfo.from + '〜' + scheduleDateInfo.to : '今後の予定') : '今後の予定';
+      systemPrompt += '\n\n【スケジュール（' + schedLabel + '）】\n' + formatScheduleForAI(scheduleData);
+    } else if (isScheduleQuery && scheduleData.length === 0) {
+      systemPrompt += '\n\n【スケジュール】該当期間のスケジュールデータはありませんでした。';
     }
 
     var geminiContents = messages.map(function(m) {
