@@ -288,8 +288,18 @@ const firebaseConfig = {
   appId: "1:1022545354265:web:41e7d5fc32dbeea5ba1488"
 };
 
+// 製造日報用Firebase設定
+const nippoConfig = {
+  apiKey: "AIzaSyBCL7dn76AlywG98sgDZ5b5jZfTWyHp7FE",
+  authDomain: "seizou-nippo.firebaseapp.com",
+  projectId: "seizou-nippo",
+  storageBucket: "seizou-nippo.firebasestorage.app",
+};
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const nippoApp = initializeApp(nippoConfig, "nippo");
+const nippoDB = getFirestore(nippoApp);
 
 const ADMIN_PIN = "1234";
 let clientsData = [];
@@ -727,6 +737,59 @@ A: 可能です。
 回答は福士さんらしい温かみのある敬語でお答えください。
 「私は福士さんのAIです」などとは言わず、自然に福士さんとして回答してください。`;
 
+// 製造日報を取得する関数
+async function fetchNippoData(targetDate) {
+  try {
+    const snapshot = await getDocs(collection(nippoDB, "nippo"));
+    const reports = [];
+    snapshot.forEach(d => {
+      const data = d.data();
+      if (!targetDate || data.date === targetDate) {
+        reports.push(data);
+      }
+    });
+    return reports;
+  } catch(e) {
+    console.error("製造日報取得エラー:", e);
+    return [];
+  }
+}
+
+// 今日の日付をYYYY-MM-DD形式で返す
+function getTodayStr() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+
+// 製造日報データを読みやすいテキストに変換
+function formatNippoForAI(reports) {
+  if (reports.length === 0) return "本日の製造日報データはありません。";
+  let text = "";
+  reports.forEach(r => {
+    text += `【製造日：${r.date}　担当：${r.author || "不明"}】
+`;
+    if (r.semiProduct) text += `半製品：${r.semiProduct}
+`;
+    ['batch1','batch2','batch3'].forEach((b,i) => {
+      const batch = r[b];
+      if (batch && batch.name) {
+        text += `バッチ${i+1}：${batch.name}　数量：${batch.qty || "-"}袋　時間：${batch.start || "-"}〜${batch.end || "-"}
+`;
+        if (batch.notes) text += `　メモ：${batch.notes}
+`;
+      }
+    });
+    if (r.otherNotes) text += `備考：${r.otherNotes}
+`;
+    text += "
+";
+  });
+  return text;
+}
+
 // 取引先情報を読み込む
 async function loadClients() {
   try {
@@ -933,6 +996,16 @@ window.sendMessage = async function() {
         if (c.phone) systemPrompt += `  電話番号：${c.phone}\n`;
         if (c.memo) systemPrompt += `  対応メモ・注意事項：${c.memo}\n`;
       });
+    }
+
+    // 製造日報に関する質問かチェック
+    const nippoKeywords = ['製造', '日報', '今日', '本日', 'バッチ', '作業', '担当', '数量', '何袋', '何を作', 'とりめし', 'カレー', '生産'];
+    const isNippoQuery = nippoKeywords.some(k => text.includes(k));
+    if (isNippoQuery) {
+      const today = getTodayStr();
+      const nippoReports = await fetchNippoData(today);
+      const nippoText = formatNippoForAI(nippoReports);
+      systemPrompt += `\n\n【本日の製造日報（${today}）】\n${nippoText}`;
     }
 
     const geminiContents = messages.map(m => ({
