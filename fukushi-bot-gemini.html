@@ -326,26 +326,56 @@ function formatNippoForAI(reports) {
 }
 
 // スケジュール取得
-function fetchScheduleData(targetDate, fromDate, toDate) {
+// personsマスターを取得してIDと名前のマップを作る
+function fetchPersonsMap() {
+  if (!scheduleDB) return Promise.resolve({});
+  return scheduleDB.ref('persons').once('value').then(function(snapshot) {
+    var map = {};
+    snapshot.forEach(function(child) {
+      var p = child.val();
+      if (p.id && p.name) map[p.id] = p.name;
+    });
+    return map;
+  }).catch(function() { return {}; });
+}
+
+function fetchScheduleData(targetDate, fromDate, toDate, personName) {
   if (!scheduleDB) return Promise.resolve([]);
-  return scheduleDB.ref('schedules').once('value').then(function(snapshot) {
+  return Promise.all([
+    scheduleDB.ref('schedules').once('value'),
+    fetchPersonsMap()
+  ]).then(function(results) {
+    var snapshot = results[0];
+    var personsMap = results[1];
     var schedules = [];
     snapshot.forEach(function(child) {
       var s = child.val();
-      if (!s.mfgDate && !s.shipDate) return;
-      var checkDate = s.mfgDate || s.shipDate;
-      if (targetDate && (s.mfgDate === targetDate || s.shipDate === targetDate)) { schedules.push(s); return; }
+      // 担当者名を付与
+      s.personName = s.personId ? (personsMap[s.personId] || s.personId) : '';
+      var startDate = s.start ? s.start.slice(0,10) : '';
+      var checkDate = s.mfgDate || s.shipDate || startDate;
+      if (!checkDate) return;
+
+      // 担当者フィルター
+      if (personName && s.personName !== personName) return;
+
+      if (targetDate) {
+        if (s.mfgDate === targetDate || s.shipDate === targetDate || startDate === targetDate) { schedules.push(s); }
+        return;
+      }
       if (fromDate && toDate) {
         if ((s.mfgDate && s.mfgDate >= fromDate && s.mfgDate <= toDate) ||
-            (s.shipDate && s.shipDate >= fromDate && s.shipDate <= toDate)) {
-          schedules.push(s); return;
+            (s.shipDate && s.shipDate >= fromDate && s.shipDate <= toDate) ||
+            (startDate && startDate >= fromDate && startDate <= toDate)) {
+          schedules.push(s);
         }
+        return;
       }
-      if (!targetDate && !fromDate) schedules.push(s);
+      schedules.push(s);
     });
     schedules.sort(function(a,b) {
-      var da = a.mfgDate || a.shipDate || '';
-      var db2 = b.mfgDate || b.shipDate || '';
+      var da = a.mfgDate || a.shipDate || (a.start||'').slice(0,10) || '';
+      var db2 = b.mfgDate || b.shipDate || (b.start||'').slice(0,10) || '';
       return da.localeCompare(db2);
     });
     return schedules.slice(0, 30);
@@ -354,15 +384,12 @@ function fetchScheduleData(targetDate, fromDate, toDate) {
 
 function formatScheduleForAI(schedules, searchType) {
   if (schedules.length === 0) return '該当期間のスケジュールデータはありません。';
-  // 出荷日順にソート
-  schedules.sort(function(a,b) {
-    var da = a.shipDate || a.mfgDate || '';
-    var db2 = b.shipDate || b.mfgDate || '';
-    return da.localeCompare(db2);
-  });
   var text = '';
   schedules.forEach(function(s) {
-    text += '【' + (s.title || '未定') + '】\n';
+    var typeLabel = s.type === 'personal' ? '【個人予定】' : '【工場予定】';
+    text += typeLabel + (s.title || '未定') + '\n';
+    if (s.personName) text += '  担当者：' + s.personName + '\n';
+    if (s.start) text += '  日時：' + s.start.slice(0,10) + ' ' + s.start.slice(11,16) + '〜' + (s.end ? s.end.slice(11,16) : '') + '\n';
     if (s.mfgDate) text += '  製造日：' + s.mfgDate + '\n';
     if (s.shipDate) text += '  出荷日：' + s.shipDate + '\n';
     if (s.note) text += '  備考：' + s.note + '\n';
@@ -610,6 +637,17 @@ function sendMessage() {
   var scheduleDateInfo = isScheduleQuery ? parseDateFromText(text) : null;
 
   var isShipQuery = text.includes('出荷') || text.includes('発送') || text.includes('納期');
+
+  // 担当者名を検出
+  var personName = null;
+  if (isScheduleQuery) {
+    var allPersonNames = clientsData.map(function(c) { return c.name; });
+    // スタッフ名を直接テキストから検索（既知の名前）
+    var knownStaff = ['養父', '日高', '福士', '山田福士'];
+    knownStaff.forEach(function(name) {
+      if (text.includes(name)) personName = name;
+    });
+  }
   var schedulePromise;
   if (!isScheduleQuery) {
     schedulePromise = Promise.resolve([]);
@@ -623,13 +661,13 @@ function sendMessage() {
     var to = new Date(); to.setMonth(to.getMonth()+2);
     schedulePromise = fetchScheduleByShipDate(null, from, to.toISOString().slice(0,10));
   } else if (scheduleDateInfo && scheduleDateInfo.type === 'single') {
-    schedulePromise = fetchScheduleData(scheduleDateInfo.date, null, null);
+    schedulePromise = fetchScheduleData(scheduleDateInfo.date, null, null, personName);
   } else if (scheduleDateInfo && scheduleDateInfo.type === 'range') {
-    schedulePromise = fetchScheduleData(null, scheduleDateInfo.from, scheduleDateInfo.to);
+    schedulePromise = fetchScheduleData(null, scheduleDateInfo.from, scheduleDateInfo.to, personName);
   } else {
     var from = getTodayStr();
     var to = new Date(); to.setMonth(to.getMonth()+1);
-    schedulePromise = fetchScheduleData(null, from, to.toISOString().slice(0,10));
+    schedulePromise = fetchScheduleData(null, from, to.toISOString().slice(0,10), personName);
   }
 
   Promise.all([nippoPromise, schedulePromise]).then(function(results) {
