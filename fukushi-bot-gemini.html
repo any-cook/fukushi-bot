@@ -96,6 +96,17 @@ textarea::placeholder{color:#D4A0B0}
 .pin-input:focus{border-color:var(--main)}
 .pin-btn{margin-top:12px;width:100%;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:10px;padding:10px;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer}
 .pin-error{color:#E05555;font-size:12px;margin-top:8px}
+.feedback-bar{display:flex;gap:8px;margin-top:8px;margin-left:48px}
+.fb-btn{border:none;border-radius:20px;padding:5px 12px;font-size:11px;font-family:"Noto Sans JP",sans-serif;cursor:pointer;font-weight:500;transition:all .2s}
+.fb-good{background:#E8F5E9;color:#2E7D32;border:1.5px solid #A5D6A7}
+.fb-good:hover{background:#C8E6C9}
+.fb-bad{background:#FFF0F4;color:var(--accent);border:1.5px solid var(--main-light)}
+.fb-bad:hover{background:var(--main-light)}
+.feedback-form{margin-top:8px;margin-left:48px;background:var(--white);border:2px solid var(--main-light);border-radius:14px;padding:12px}
+.feedback-form p{font-size:12px;color:var(--muted);margin-bottom:8px}
+.feedback-form textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px;font-family:"Noto Sans JP",sans-serif;font-size:13px;color:var(--text);background:var(--main-pale);outline:none;resize:vertical;min-height:60px}
+.feedback-form textarea:focus{border-color:var(--main);background:#fff}
+.fb-save{margin-top:8px;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:8px;padding:7px 16px;color:#fff;font-size:12px;font-weight:700;font-family:"Noto Sans JP",sans-serif;cursor:pointer}
 .chat-wrapper::-webkit-scrollbar{width:4px}
 .chat-wrapper::-webkit-scrollbar-thumb{background:var(--main-light);border-radius:4px}
 </style>
@@ -415,6 +426,34 @@ function fetchScheduleByShipDate(targetDate, fromDate, toDate) {
   }).catch(function() { return []; });
 }
 
+// 学習済みQ&Aを読み込む
+var learnedQA = [];
+function loadLearnedQA() {
+  db.collection("learnedQA").get().then(function(snapshot) {
+    learnedQA = [];
+    snapshot.forEach(function(d) { learnedQA.push(Object.assign({id: d.id}, d.data())); });
+  }).catch(function(e) { console.warn("learnedQA load error:", e); });
+}
+
+// 質問と学習済みQ&Aを照合する
+function findLearnedAnswer(question) {
+  if (learnedQA.length === 0) return null;
+  var best = null;
+  var bestScore = 0;
+  learnedQA.forEach(function(qa) {
+    // 簡易一致スコア（共通文字数）
+    var score = 0;
+    var qChars = question.split('');
+    qChars.forEach(function(c) { if (qa.question && qa.question.includes(c)) score++; });
+    var similarity = score / Math.max(question.length, (qa.question||'').length);
+    if (similarity > 0.6 && similarity > bestScore) {
+      bestScore = similarity;
+      best = qa;
+    }
+  });
+  return best;
+}
+
 // 取引先管理
 function loadClients() {
   db.collection("clients").get().then(function(snapshot) {
@@ -458,6 +497,7 @@ function saveClient() {
     document.getElementById('editId').value = '';
     document.getElementById('formTitle').textContent = '➕ 取引先を追加';
     loadClients();
+loadLearnedQA();
   }).catch(function(e) { alert('保存に失敗しました: ' + e.message); });
 }
 
@@ -554,7 +594,7 @@ function switchTab(tab) {
 }
 
 // チャット
-function addMessage(role, text) {
+function addMessage(role, text, question) {
   var div = document.createElement('div');
   div.className = 'message ' + role;
   var av = document.createElement('div');
@@ -570,6 +610,45 @@ function addMessage(role, text) {
   bubble.textContent = text;
   div.appendChild(av); div.appendChild(bubble);
   document.getElementById('chatArea').appendChild(div);
+
+  // ボットの回答にフィードバックボタンを追加
+  if (role === 'bot' && question) {
+    var fbBar = document.createElement('div');
+    fbBar.className = 'feedback-bar';
+    fbBar.innerHTML = '<button class="fb-btn fb-good">👍 正しい</button><button class="fb-btn fb-bad">👎 修正が必要</button>';
+    document.getElementById('chatArea').appendChild(fbBar);
+
+    var feedbackForm = document.createElement('div');
+    feedbackForm.className = 'feedback-form';
+    feedbackForm.style.display = 'none';
+    feedbackForm.innerHTML = '<p>正しい回答を入力してください：</p><textarea placeholder="正しい回答を入力…"></textarea><br><button class="fb-save">💾 保存して学習させる</button>';
+    document.getElementById('chatArea').appendChild(feedbackForm);
+
+    fbBar.children[0].addEventListener('click', function() {
+      fbBar.innerHTML = '<span style="font-size:12px;color:#2E7D32">✅ ありがとうございます！</span>';
+      feedbackForm.style.display = 'none';
+    });
+
+    fbBar.children[1].addEventListener('click', function() {
+      feedbackForm.style.display = feedbackForm.style.display === 'none' ? 'block' : 'none';
+    });
+
+    feedbackForm.querySelector('.fb-save').addEventListener('click', function() {
+      var correctAnswer = feedbackForm.querySelector('textarea').value.trim();
+      if (!correctAnswer) { alert('回答を入力してください'); return; }
+      db.collection("learnedQA").add({
+        question: question,
+        answer: correctAnswer,
+        originalAnswer: text,
+        createdAt: new Date()
+      }).then(function() {
+        feedbackForm.innerHTML = '<p style="color:#2E7D32">✅ 学習しました！次回から改善された回答をします。</p>';
+        learnedQA.push({question: question, answer: correctAnswer});
+        fbBar.innerHTML = '<span style="font-size:12px;color:#2E7D32">✅ 学習完了！</span>';
+      }).catch(function(e) { alert('保存に失敗しました: ' + e.message); });
+    });
+  }
+
   document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
 }
 
@@ -674,6 +753,11 @@ function sendMessage() {
     var nippoReports = results[0];
     var scheduleData = results[1];
     var systemPrompt = SYSTEM_PROMPT_BASE;
+    // 学習済みQ&Aを照合して追加
+    var learned = findLearnedAnswer(text);
+    if (learned) {
+      systemPrompt += '\n\n【重要：以前修正された回答】\nQ: ' + learned.question + '\nA: ' + learned.answer + '\n上記の質問に近い場合は必ずこの回答を参考にしてください。';
+    }
     if (clientsData.length > 0) {
       systemPrompt += '\n\n【取引先情報】\n';
       clientsData.forEach(function(c) {
@@ -712,7 +796,7 @@ function sendMessage() {
     if (data.error) { addMessage('bot', 'エラー：' + data.error.message); }
     else {
       var reply = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || 'うまく回答できませんでした。もう一度試してみてください。';
-      addMessage('bot', reply);
+      addMessage('bot', reply, text);
       messages.push({role:'assistant', content:reply});
     }
     isLoading = false; document.getElementById('sendBtn').disabled = false; document.getElementById('inputBox').focus();
