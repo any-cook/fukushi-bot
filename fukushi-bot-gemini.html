@@ -352,8 +352,14 @@ function fetchScheduleData(targetDate, fromDate, toDate) {
   }).catch(function() { return []; });
 }
 
-function formatScheduleForAI(schedules) {
+function formatScheduleForAI(schedules, searchType) {
   if (schedules.length === 0) return '該当期間のスケジュールデータはありません。';
+  // 出荷日順にソート
+  schedules.sort(function(a,b) {
+    var da = a.shipDate || a.mfgDate || '';
+    var db2 = b.shipDate || b.mfgDate || '';
+    return da.localeCompare(db2);
+  });
   var text = '';
   schedules.forEach(function(s) {
     text += '【' + (s.title || '未定') + '】
@@ -368,6 +374,23 @@ function formatScheduleForAI(schedules) {
 ';
   });
   return text;
+}
+
+// 出荷日で絞り込む関数
+function fetchScheduleByShipDate(targetDate, fromDate, toDate) {
+  if (!scheduleDB) return Promise.resolve([]);
+  return scheduleDB.ref('schedules').once('value').then(function(snapshot) {
+    var schedules = [];
+    snapshot.forEach(function(child) {
+      var s = child.val();
+      if (!s.shipDate) return;
+      if (targetDate && s.shipDate === targetDate) { schedules.push(s); return; }
+      if (fromDate && toDate && s.shipDate >= fromDate && s.shipDate <= toDate) { schedules.push(s); return; }
+      if (!targetDate && !fromDate) schedules.push(s);
+    });
+    schedules.sort(function(a,b) { return (a.shipDate||'').localeCompare(b.shipDate||''); });
+    return schedules;
+  }).catch(function() { return []; });
 }
 
 // 取引先管理
@@ -587,19 +610,28 @@ function sendMessage() {
     nippoPromise = fetchNippoData(null, null, null);
   }
 
-  var scheduleKeywords = ['スケジュール','予定','出荷','納期','いつ','計画','今週','来週','今月','来月'];
+  var scheduleKeywords = ['スケジュール','予定','出荷','納期','いつ','計画','今週','来週','今月','来月','月','日','出荷日','製造日','発送'];
   var isScheduleQuery = scheduleKeywords.some(function(k) { return text.includes(k); });
   var scheduleDateInfo = isScheduleQuery ? parseDateFromText(text) : null;
 
+  var isShipQuery = text.includes('出荷') || text.includes('発送') || text.includes('納期');
   var schedulePromise;
   if (!isScheduleQuery) {
     schedulePromise = Promise.resolve([]);
+  } else if (isShipQuery && scheduleDateInfo && scheduleDateInfo.type === 'single') {
+    schedulePromise = fetchScheduleByShipDate(scheduleDateInfo.date, null, null);
+  } else if (isShipQuery && scheduleDateInfo && scheduleDateInfo.type === 'range') {
+    schedulePromise = fetchScheduleByShipDate(null, scheduleDateInfo.from, scheduleDateInfo.to);
+  } else if (isShipQuery) {
+    // 出荷クエリでデフォルトは今日から2ヶ月先
+    var from = getTodayStr();
+    var to = new Date(); to.setMonth(to.getMonth()+2);
+    schedulePromise = fetchScheduleByShipDate(null, from, to.toISOString().slice(0,10));
   } else if (scheduleDateInfo && scheduleDateInfo.type === 'single') {
     schedulePromise = fetchScheduleData(scheduleDateInfo.date, null, null);
   } else if (scheduleDateInfo && scheduleDateInfo.type === 'range') {
     schedulePromise = fetchScheduleData(null, scheduleDateInfo.from, scheduleDateInfo.to);
   } else {
-    // デフォルトは今日から1ヶ月先
     var from = getTodayStr();
     var to = new Date(); to.setMonth(to.getMonth()+1);
     schedulePromise = fetchScheduleData(null, from, to.toISOString().slice(0,10));
