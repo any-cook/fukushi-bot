@@ -834,7 +834,15 @@ function addMessage(role, text) {
   div.className = `message ${role}`;
   const av = document.createElement('div');
   av.className = 'msg-avatar';
-  av.textContent = role === 'bot' ? '👨‍🍳' : '👤';
+  if (role === 'bot') {
+    av.style.cssText = 'overflow:hidden;';
+    const img = document.createElement('img');
+    img.src = 'icon.png';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+    av.appendChild(img);
+  } else {
+    av.textContent = '👤';
+  }
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.textContent = text;
