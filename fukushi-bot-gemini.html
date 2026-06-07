@@ -210,16 +210,83 @@ function getTodayStr() {
   return y + '-' + m + '-' + d;
 }
 
-function fetchNippoData(targetDate) {
+function fetchNippoData(targetDate, fromDate, toDate) {
   if (!nippoDB) return Promise.resolve([]);
   return nippoDB.collection("nippo").get().then(function(snapshot) {
     var reports = [];
     snapshot.forEach(function(d) {
       var data = d.data();
-      if (!targetDate || data.date === targetDate) reports.push(data);
+      if (!data.date) return;
+      if (targetDate && data.date === targetDate) { reports.push(data); return; }
+      if (fromDate && toDate && data.date >= fromDate && data.date <= toDate) { reports.push(data); return; }
+      if (!targetDate && !fromDate) reports.push(data);
     });
-    return reports;
+    reports.sort(function(a,b) { return b.date.localeCompare(a.date); });
+    return reports.slice(0, 20); // 最大20件
   }).catch(function() { return []; });
+}
+
+// テキストから日付を解析する関数
+function parseDateFromText(text) {
+  var today = new Date();
+  var todayStr = getTodayStr();
+
+  // 今日・本日
+  if (text.match(/今日|本日/)) return {type:'single', date: todayStr};
+
+  // 昨日
+  if (text.match(/昨日/)) {
+    var d = new Date(today); d.setDate(d.getDate()-1);
+    return {type:'single', date: d.toISOString().slice(0,10)};
+  }
+
+  // 今週
+  if (text.match(/今週/)) {
+    var mon = new Date(today);
+    mon.setDate(today.getDate() - today.getDay() + (today.getDay()===0 ? -6 : 1));
+    return {type:'range', from: mon.toISOString().slice(0,10), to: todayStr};
+  }
+
+  // 先週
+  if (text.match(/先週/)) {
+    var lastMon = new Date(today);
+    lastMon.setDate(today.getDate() - today.getDay() - 6);
+    var lastSun = new Date(lastMon); lastSun.setDate(lastMon.getDate()+6);
+    return {type:'range', from: lastMon.toISOString().slice(0,10), to: lastSun.toISOString().slice(0,10)};
+  }
+
+  // 今月
+  if (text.match(/今月/)) {
+    var firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    return {type:'range', from: firstDay.toISOString().slice(0,10), to: todayStr};
+  }
+
+  // 先月
+  if (text.match(/先月/)) {
+    var firstDayLast = new Date(today.getFullYear(), today.getMonth()-1, 1);
+    var lastDayLast = new Date(today.getFullYear(), today.getMonth(), 0);
+    return {type:'range', from: firstDayLast.toISOString().slice(0,10), to: lastDayLast.toISOString().slice(0,10)};
+  }
+
+  // X月Y日
+  var mdMatch = text.match(/(\d{1,2})月(\d{1,2})日/);
+  if (mdMatch) {
+    var year = today.getFullYear();
+    var month = String(mdMatch[1]).padStart(2,'0');
+    var day = String(mdMatch[2]).padStart(2,'0');
+    return {type:'single', date: year + '-' + month + '-' + day};
+  }
+
+  // YYYY-MM-DD
+  var fullMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (fullMatch) return {type:'single', date: fullMatch[0]};
+
+  // 過去・最近・これまで → 直近30件
+  if (text.match(/過去|最近|これまで|全部|一覧/)) {
+    return {type:'all'};
+  }
+
+  return null;
 }
 
 function formatNippoForAI(reports) {
@@ -443,10 +510,22 @@ function sendMessage() {
     showTyping();
   }
 
-  var nippoKeywords = ['製造','日報','今日','本日','バッチ','作業','担当','数量','何袋','何を作','とりめし','カレー','生産'];
+  var nippoKeywords = ['製造','日報','今日','本日','昨日','今週','先週','今月','先月','バッチ','作業','担当','数量','何袋','何を作','とりめし','カレー','生産','過去','最近','これまで','一覧','記録'];
   var isNippoQuery = nippoKeywords.some(function(k) { return text.includes(k); });
+  var dateInfo = isNippoQuery ? parseDateFromText(text) : null;
 
-  fetchNippoData(isNippoQuery ? getTodayStr() : null).then(function(nippoReports) {
+  var nippoPromise;
+  if (!isNippoQuery) {
+    nippoPromise = Promise.resolve([]);
+  } else if (dateInfo && dateInfo.type === 'single') {
+    nippoPromise = fetchNippoData(dateInfo.date, null, null);
+  } else if (dateInfo && dateInfo.type === 'range') {
+    nippoPromise = fetchNippoData(null, dateInfo.from, dateInfo.to);
+  } else {
+    nippoPromise = fetchNippoData(null, null, null);
+  }
+
+  nippoPromise.then(function(nippoReports) {
     var systemPrompt = SYSTEM_PROMPT_BASE;
     if (clientsData.length > 0) {
       systemPrompt += '\n\n【取引先情報】\n';
@@ -458,7 +537,10 @@ function sendMessage() {
       });
     }
     if (isNippoQuery && nippoReports.length > 0) {
-      systemPrompt += '\n\n【本日の製造日報（' + getTodayStr() + '）】\n' + formatNippoForAI(nippoReports);
+      var dateLabel = dateInfo ? (dateInfo.type === 'single' ? dateInfo.date : dateInfo.type === 'range' ? dateInfo.from + '〜' + dateInfo.to : '直近') : '直近';
+      systemPrompt += '\n\n【製造日報（' + dateLabel + '）】\n' + formatNippoForAI(nippoReports);
+    } else if (isNippoQuery && nippoReports.length === 0) {
+      systemPrompt += '\n\n【製造日報】該当期間の製造日報データはありませんでした。';
     }
 
     var geminiContents = messages.map(function(m) {
