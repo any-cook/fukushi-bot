@@ -362,16 +362,11 @@ function formatScheduleForAI(schedules, searchType) {
   });
   var text = '';
   schedules.forEach(function(s) {
-    text += '【' + (s.title || '未定') + '】
-';
-    if (s.mfgDate) text += '  製造日：' + s.mfgDate + '
-';
-    if (s.shipDate) text += '  出荷日：' + s.shipDate + '
-';
-    if (s.note) text += '  備考：' + s.note + '
-';
-    text += '
-';
+    text += '【' + (s.title || '未定') + '】\n';
+    if (s.mfgDate) text += '  製造日：' + s.mfgDate + '\n';
+    if (s.shipDate) text += '  出荷日：' + s.shipDate + '\n';
+    if (s.note) text += '  備考：' + s.note + '\n';
+    text += '\n';
   });
   return text;
 }
