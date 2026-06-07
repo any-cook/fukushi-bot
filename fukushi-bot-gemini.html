@@ -300,8 +300,13 @@ const nippoConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const nippoApp = initializeApp(nippoConfig, "nippo");
-const nippoDB = getFirestore(nippoApp);
+let nippoDB = null;
+try {
+  const nippoApp = initializeApp(nippoConfig, "nippo");
+  nippoDB = getFirestore(nippoApp);
+} catch(e) {
+  console.warn("製造日報DB初期化エラー:", e);
+}
 
 const ADMIN_PIN = "1234";
 let clientsData = [];
@@ -741,6 +746,7 @@ A: 可能です。
 
 // 製造日報を取得する関数
 async function fetchNippoData(targetDate) {
+  if (!nippoDB) return [];
   try {
     const snapshot = await getDocs(collection(nippoDB, "nippo"));
     const reports = [];
