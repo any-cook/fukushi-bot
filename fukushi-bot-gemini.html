@@ -275,9 +275,9 @@
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
 
 const firebaseConfig = {
   apiKey: "AIzaSyBCL7dn76AlywG98sgDZ5b5jZfTWyHp7FE",
@@ -298,12 +298,12 @@ const nippoConfig = {
   appId: "1:484585876310:web:f5b641ddf222138a2d84f7"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore(app);
 let nippoDB = null;
 try {
-  const nippoApp = initializeApp(nippoConfig, "nippo");
-  nippoDB = getFirestore(nippoApp);
+  const nippoApp = firebase.initializeApp(nippoConfig, "nippo");
+  nippoDB = firebase.firestore(nippoApp);
 } catch(e) {
   console.warn("製造日報DB初期化エラー:", e);
 }
@@ -748,7 +748,7 @@ A: 可能です。
 async function fetchNippoData(targetDate) {
   if (!nippoDB) return [];
   try {
-    const snapshot = await getDocs(collection(nippoDB, "nippo"));
+    const snapshot = await nippoDB.collection("nippo").get();
     const reports = [];
     snapshot.forEach(d => {
       const data = d.data();
@@ -801,7 +801,7 @@ function formatNippoForAI(reports) {
 // 取引先情報を読み込む
 async function loadClients() {
   try {
-    const snapshot = await getDocs(collection(db, "clients"));
+    const snapshot = await db.collection("clients").get();
     clientsData = [];
     snapshot.forEach(d => clientsData.push({ id: d.id, ...d.data() }));
     renderClientList();
@@ -839,9 +839,9 @@ window.saveClient = async function() {
   if (!name) { alert('会社名を入力してください'); return; }
   try {
     if (editId) {
-      await updateDoc(doc(db, "clients", editId), { name, memo, contact, phone });
+      await db.collection("clients").doc(editId).update({ name, memo, contact, phone });
     } else {
-      await addDoc(collection(db, "clients"), { name, memo, contact, phone, createdAt: new Date() });
+      await db.collection("clients").add({ name, memo, contact, phone, createdAt: new Date() });
     }
     document.getElementById('clientName').value = '';
     document.getElementById('clientMemo').value = '';
@@ -868,7 +868,7 @@ window.editClient = function(id) {
 window.deleteClient = async function(id) {
   if (!confirm('この取引先を削除しますか？')) return;
   try {
-    await deleteDoc(doc(db, "clients", id));
+    await db.collection("clients").doc(id).delete();
     await loadClients();
   } catch(e) { alert('削除に失敗しました'); }
 }
@@ -1103,7 +1103,7 @@ window.importCSV = async function(event) {
     const memo = (cols[3] || '').trim();
     if (!name) continue;
     try {
-      await addDoc(collection(db, "clients"), { name, contact, phone, memo, createdAt: new Date() });
+      await db.collection("clients").add({ name, contact, phone, memo, createdAt: new Date() });
       count++;
     } catch(e) { console.error(e); }
   }
