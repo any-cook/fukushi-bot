@@ -560,9 +560,17 @@ function importCSV(event) {
       }
       cols.push(cur);
       var name = (cols[0]||'').trim();
+      var formal = (cols[1]||'').trim();
+      var shipName = (cols[2]||'').trim();
+      var zip = (cols[3]||'').trim();
+      var address = (cols[4]||'').trim();
+      var contact = (cols[5]||'').trim();
+      var phone = (cols[6]||'').trim();
+      var product = (cols[7]||'').trim();
+      var memo = (cols[8]||'').trim();
       if (!name) return Promise.resolve();
       count++;
-      return db.collection("clients").add({name:name, contact:(cols[1]||'').trim(), phone:(cols[2]||'').trim(), memo:(cols[3]||'').trim(), createdAt:new Date()});
+      return db.collection("clients").add({name:name,formal:formal,shipName:shipName,zip:zip,address:address,contact:contact,phone:phone,product:product,memo:memo,createdAt:new Date()});
     });
     Promise.all(promises).then(function() {
       alert(count + '件のデータをインポートしました');
