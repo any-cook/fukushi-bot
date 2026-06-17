@@ -153,10 +153,15 @@ textarea::placeholder{color:#D4A0B0}
     <div class="client-form">
       <h3 id="formTitle">➕ 取引先を追加</h3>
       <input type="hidden" id="editId">
-      <div class="form-group"><label>会社名</label><input type="text" id="clientName" placeholder="例：株式会社〇〇"></div>
-      <div class="form-group"><label>対応メモ・注意事項</label><textarea id="clientMemo" placeholder="例：担当者は田中様。納期は必ず2週間前に確認すること。"></textarea></div>
-      <div class="form-group"><label>担当者名</label><input type="text" id="clientContact" placeholder="例：田中様"></div>
-      <div class="form-group"><label>電話番号</label><input type="text" id="clientPhone" placeholder="例：090-XXXX-XXXX"></div>
+      <div class="form-group"><label>取引先名</label><input type="text" id="clientName" placeholder="例：キヨトク"></div>
+      <div class="form-group"><label>正式名称</label><input type="text" id="clientFormal" placeholder="例：株式会社キヨトク"></div>
+      <div class="form-group"><label>発送先名</label><input type="text" id="clientShipName" placeholder="例：株式会社キヨトク 倉庫担当"></div>
+      <div class="form-group"><label>郵便番号</label><input type="text" id="clientZip" placeholder="例：812-0882"></div>
+      <div class="form-group"><label>住所</label><input type="text" id="clientAddress" placeholder="例：福岡県福岡市博多区麦野４丁目２５番２４号"></div>
+      <div class="form-group"><label>担当者</label><input type="text" id="clientContact" placeholder="例：田中様"></div>
+      <div class="form-group"><label>電話番号</label><input type="text" id="clientPhone" placeholder="例：092-586-9633"></div>
+      <div class="form-group"><label>商品</label><input type="text" id="clientProduct" placeholder="例：ダメヤカレー・チャーシュー"></div>
+      <div class="form-group"><label>発送方法・注意事項</label><textarea id="clientMemo" placeholder="例：返信FAXで引取り日連絡。代引き手数料440円忘れずに。"></textarea></div>
       <button class="save-btn" id="saveClientBtn">💾 保存する</button>
     </div>
     <div class="csv-bar">
@@ -507,9 +512,14 @@ function editClient(id) {
   var c = clientsData.find(function(x) { return x.id === id; });
   if (!c) return;
   document.getElementById('clientName').value = c.name || '';
-  document.getElementById('clientMemo').value = c.memo || '';
+  document.getElementById('clientFormal').value = c.formal || '';
+  document.getElementById('clientShipName').value = c.shipName || '';
+  document.getElementById('clientZip').value = c.zip || '';
+  document.getElementById('clientAddress').value = c.address || '';
   document.getElementById('clientContact').value = c.contact || '';
   document.getElementById('clientPhone').value = c.phone || '';
+  document.getElementById('clientProduct').value = c.product || '';
+  document.getElementById('clientMemo').value = c.memo || '';
   document.getElementById('editId').value = id;
   document.getElementById('formTitle').textContent = '✏️ 取引先を編集';
   window.scrollTo(0, 0);
@@ -763,10 +773,13 @@ function sendMessage() {
     if (clientsData.length > 0) {
       systemPrompt += '\n\n【取引先情報】\n';
       clientsData.forEach(function(c) {
-        systemPrompt += '\n■ ' + c.name + '\n';
+        systemPrompt += '\n■ ' + c.name + (c.formal ? '（' + c.formal + '）' : '') + '\n';
+        if (c.shipName) systemPrompt += '  発送先：' + c.shipName + '\n';
+        if (c.zip || c.address) systemPrompt += '  住所：〒' + (c.zip||'') + ' ' + (c.address||'') + '\n';
         if (c.contact) systemPrompt += '  担当者：' + c.contact + '\n';
         if (c.phone) systemPrompt += '  電話番号：' + c.phone + '\n';
-        if (c.memo) systemPrompt += '  対応メモ：' + c.memo + '\n';
+        if (c.product) systemPrompt += '  商品：' + c.product + '\n';
+        if (c.memo) systemPrompt += '  発送方法・注意事項：' + c.memo + '\n';
       });
     }
     if (isNippoQuery && nippoReports.length > 0) {
