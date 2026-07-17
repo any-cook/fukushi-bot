@@ -1,4 +1,4 @@
-var CACHE_NAME = 'anycook-bot-v1';
+var CACHE_NAME = 'anycook-bot-v3';
 var urlsToCache = [
   './fukushi-bot-gemini.html',
   './icon.png',
@@ -6,25 +6,10 @@ var urlsToCache = [
 ];
 
 self.addEventListener('install', function(event) {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(urlsToCache);
-    })
-  );
-});
-
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      if (response) return response;
-      return fetch(event.request).then(function(response) {
-        if (!response || response.status !== 200 || response.type !== 'basic') return response;
-        var responseToCache = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, responseToCache);
-        });
-        return response;
-      });
     })
   );
 });
@@ -36,6 +21,16 @@ self.addEventListener('activate', function(event) {
         cacheNames.filter(function(name) { return name !== CACHE_NAME; })
           .map(function(name) { return caches.delete(name); })
       );
+    }).then(function() {
+      return self.clients.claim();
+    })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    fetch(event.request).catch(function() {
+      return caches.match(event.request);
     })
   );
 });
