@@ -245,19 +245,56 @@ function getTodayStr() {
   return y + '-' + m + '-' + d;
 }
 
-function fetchNippoData(targetDate, fromDate, toDate) {
+function fetchNippoData(targetDate, fromDate, toDate, productName) {
   if (!nippoDB) return Promise.resolve([]);
   return nippoDB.collection("nippo").get().then(function(snapshot) {
     var reports = [];
     snapshot.forEach(function(d) {
       var data = d.data();
       if (!data.date) return;
+
+      // 商品名フィルター
+      if (productName) {
+        var matched = false;
+        ['batch1','batch2','batch3'].forEach(function(b) {
+          if (data[b] && data[b].name && data[b].name.includes(productName)) matched = true;
+        });
+        if (data.semiProduct && data.semiProduct.includes(productName)) matched = true;
+        if (!matched) return;
+      }
+
       if (targetDate && data.date === targetDate) { reports.push(data); return; }
       if (fromDate && toDate && data.date >= fromDate && data.date <= toDate) { reports.push(data); return; }
       if (!targetDate && !fromDate) reports.push(data);
     });
     reports.sort(function(a,b) { return b.date.localeCompare(a.date); });
-    return reports.slice(0, 20); // 最大20件
+    return reports.slice(0, 20);
+  }).catch(function() { return []; });
+}
+
+// 商品名で日報を検索して製造日一覧を返す
+function searchNippoByProduct(productName) {
+  if (!nippoDB || !productName) return Promise.resolve([]);
+  return nippoDB.collection("nippo").get().then(function(snapshot) {
+    var results = [];
+    snapshot.forEach(function(d) {
+      var data = d.data();
+      if (!data.date) return;
+      var matchedBatches = [];
+      ['batch1','batch2','batch3'].forEach(function(b) {
+        if (data[b] && data[b].name && data[b].name.includes(productName)) {
+          matchedBatches.push(data[b].name + '（' + (data[b].qty||'-') + '袋）');
+        }
+      });
+      if (data.semiProduct && data.semiProduct.includes(productName)) {
+        matchedBatches.push(data.semiProduct);
+      }
+      if (matchedBatches.length > 0) {
+        results.push({date: data.date, author: data.author, batches: matchedBatches});
+      }
+    });
+    results.sort(function(a,b) { return b.date.localeCompare(a.date); });
+    return results;
   }).catch(function() { return []; });
 }
 
@@ -716,19 +753,27 @@ function sendMessage() {
     showTyping();
   }
 
-  var nippoKeywords = ['製造','日報','今日','本日','昨日','今週','先週','今月','先月','バッチ','作業','担当','数量','何袋','何を作','とりめし','カレー','生産','過去','最近','これまで','一覧','記録'];
+  var nippoKeywords = ['製造','日報','今日','本日','昨日','今週','先週','今月','先月','バッチ','作業','担当','数量','何袋','何を作','とりめし','カレー','生産','過去','最近','これまで','一覧','記録','いつ作','いつ製造'];
   var isNippoQuery = nippoKeywords.some(function(k) { return text.includes(k); });
+
+  // 商品名検索パターン：「〇〇はいつ製造した？」「〇〇の製造日は？」
+  var productSearchMatch = text.match(/(.+?)(?:はいつ|の製造日|を最後に製造|を製造したの|の製造履歴|はいつ作|を作った)/);
+  var searchProductName = productSearchMatch ? productSearchMatch[1].trim() : null;
+
   var dateInfo = isNippoQuery ? parseDateFromText(text) : null;
 
   var nippoPromise;
-  if (!isNippoQuery) {
+  if (searchProductName && !dateInfo) {
+    // 商品名で全期間検索
+    nippoPromise = searchNippoByProduct(searchProductName);
+  } else if (!isNippoQuery) {
     nippoPromise = Promise.resolve([]);
   } else if (dateInfo && dateInfo.type === 'single') {
-    nippoPromise = fetchNippoData(dateInfo.date, null, null);
+    nippoPromise = fetchNippoData(dateInfo.date, null, null, searchProductName);
   } else if (dateInfo && dateInfo.type === 'range') {
-    nippoPromise = fetchNippoData(null, dateInfo.from, dateInfo.to);
+    nippoPromise = fetchNippoData(null, dateInfo.from, dateInfo.to, searchProductName);
   } else {
-    nippoPromise = fetchNippoData(null, null, null);
+    nippoPromise = fetchNippoData(null, null, null, searchProductName);
   }
 
   var scheduleKeywords = ['スケジュール','予定','出荷','納期','いつ','計画','今週','来週','今月','来月','月','日','出荷日','製造日','発送'];
@@ -790,7 +835,18 @@ function sendMessage() {
         if (c.memo) systemPrompt += '  発送方法・注意事項：' + c.memo + '\n';
       });
     }
-    if (isNippoQuery && nippoReports.length > 0) {
+    if (searchProductName && !dateInfo) {
+      // 商品名検索結果
+      if (nippoReports.length > 0) {
+        var productResultText = '【' + searchProductName + '】の製造履歴（新しい順）\n';
+        nippoReports.forEach(function(r) {
+          productResultText += r.date + '　担当：' + (r.author||'不明') + '　' + r.batches.join('、') + '\n';
+        });
+        systemPrompt += '\n\n' + productResultText;
+      } else {
+        systemPrompt += '\n\n【' + searchProductName + '】の製造記録は見つかりませんでした。';
+      }
+    } else if (isNippoQuery && nippoReports.length > 0) {
       var dateLabel = dateInfo ? (dateInfo.type === 'single' ? dateInfo.date : dateInfo.type === 'range' ? dateInfo.from + '〜' + dateInfo.to : '直近') : '直近';
       systemPrompt += '\n\n【製造日報（' + dateLabel + '）】\n' + formatNippoForAI(nippoReports);
     } else if (isNippoQuery && nippoReports.length === 0) {
