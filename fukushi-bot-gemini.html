@@ -3,48 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>エニクックの事について</title>
 <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon-512.png">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="エニクック">
 <meta name="theme-color" content="#FF6B9D">
 <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="エニクックの事について">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--main:#FF8FAB;--main-light:#FFD6E0;--main-pale:#FFF0F4;--accent:#FF6B9D;--teal:#4ECDC4;--text:#3D2C2C;--muted:#9E7B7B;--border:#FADADD;--bg:#FFF8FA;--white:#FFFFFF}
+:root{--main:#FF8FAB;--main-light:#FFD6E0;--main-pale:#FFF0F4;--accent:#FF6B9D;--teal:#4ECDC4;--text:#3D2C2C;--muted:#9E7B7B;--border:#FADADD;--bg:#FFF8FA;--white:#FFFFFF;--danger:#E05555}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 header{background:linear-gradient(135deg,#FF8FAB,#FF6B9D);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 3px 16px rgba(255,107,157,.3)}
-.header-left{display:flex;align-items:center;gap:12px}
-.avatar{width:50px;height:50px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:3px solid rgba(255,255,255,.6);overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.header-left{display:flex;align-items:center;gap:12px;min-width:0}
+.avatar{width:50px;height:50px;border-radius:50%;background:#fff;flex-shrink:0;border:3px solid rgba(255,255,255,.6);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
 .header-info h1{font-size:17px;font-weight:700;color:#fff}
 .header-info p{font-size:11px;color:rgba(255,255,255,.85);margin-top:2px;display:flex;align-items:center;gap:4px}
 .status-dot{width:7px;height:7px;background:#AFFFAE;border-radius:50%;display:inline-block;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
-.admin-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);color:#fff;font-size:12px;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;transition:background .2s}
+.admin-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);color:#fff;font-size:12px;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:500;flex-shrink:0}
 .admin-btn:hover{background:rgba(255,255,255,.35)}
-.tab-bar{display:none;background:var(--white);border-bottom:2px solid var(--main-light);padding:0 20px}
+.tab-bar{display:none;background:var(--white);border-bottom:2px solid var(--main-light);padding:0 12px;overflow-x:auto}
 .tab-bar.visible{display:flex}
-.tab{padding:12px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-#chatScreen{display:flex;flex-direction:column;flex:1}
+.screen{display:none;flex:1;flex-direction:column}
+.screen.visible{display:flex}
 .chat-wrapper{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;max-width:680px;width:100%;margin:0 auto}
 .intro-card{background:var(--white);border:2px solid var(--main-light);border-radius:20px;padding:18px 20px;font-size:13px;line-height:1.9;color:var(--muted);position:relative;overflow:hidden}
 .intro-card::before{content:'🍛';position:absolute;right:16px;top:12px;font-size:28px;opacity:.15}
-.intro-card strong{color:var(--accent);font-weight:700}
 .message{display:flex;gap:10px;align-items:flex-end;animation:fadeUp .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .message.user{flex-direction:row-reverse}
 .msg-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden}
 .message.bot .msg-avatar{background:linear-gradient(135deg,#FF8FAB,#FF6B9D)}
 .message.user .msg-avatar{background:linear-gradient(135deg,#4ECDC4,#2BB5AC)}
-.msg-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.bubble{max-width:72%;padding:12px 16px;font-size:14px;line-height:1.8;white-space:pre-wrap}
-.message.bot .bubble{background:var(--white);border:2px solid var(--main-light);border-radius:18px 18px 18px 4px;color:var(--text)}
+.msg-avatar img{width:100%;height:100%;object-fit:cover}
+.bubble{max-width:78%;padding:12px 16px;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.message.bot .bubble{background:var(--white);border:2px solid var(--main-light);border-radius:18px 18px 18px 4px}
 .message.user .bubble{background:linear-gradient(135deg,#4ECDC4,#2BB5AC);color:#fff;border-radius:18px 18px 4px 18px}
+.message.error .bubble{border-color:#FFCECE;background:#FFF6F6;color:#8A2E2E}
 .typing{display:flex;gap:10px;align-items:flex-end}
 .typing-dots{background:var(--white);border:2px solid var(--main-light);border-radius:18px 18px 18px 4px;padding:14px 18px;display:flex;gap:5px;align-items:center}
 .dot{width:7px;height:7px;background:var(--main);border-radius:50%;animation:bounce 1.2s infinite}
@@ -52,63 +54,62 @@ header{background:linear-gradient(135deg,#FF8FAB,#FF6B9D);padding:14px 20px;disp
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
 .input-area{background:var(--white);border-top:2px solid var(--main-light);padding:12px 16px 16px;position:sticky;bottom:0}
 .input-inner{max-width:680px;margin:0 auto;display:flex;gap:10px;align-items:flex-end;background:var(--main-pale);border:2px solid var(--main-light);border-radius:24px;padding:8px 8px 8px 16px}
-textarea{flex:1;border:none;background:transparent;padding:6px 0;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:var(--text);resize:none;outline:none;max-height:100px;min-height:36px;line-height:1.6}
-textarea::placeholder{color:#D4A0B0}
-#sendBtn{width:40px;height:40px;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;flex-shrink:0;box-shadow:0 2px 8px rgba(255,107,157,.4)}
-#sendBtn:hover{transform:scale(1.08)}#sendBtn:active{transform:scale(.95)}
+#inputBox{flex:1;border:none;background:transparent;padding:6px 0;font-family:inherit;font-size:14px;color:var(--text);resize:none;outline:none;max-height:140px;min-height:36px;line-height:1.6}
+#inputBox::placeholder{color:#D4A0B0}
+#sendBtn{width:40px;height:40px;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(255,107,157,.4)}
 #sendBtn:disabled{background:#DDD;box-shadow:none;cursor:not-allowed}
 #sendBtn svg{width:18px;height:18px;fill:#fff}
-.footer-note{text-align:center;font-size:10px;color:#D4A0B0;margin-top:8px;max-width:680px;margin-left:auto;margin-right:auto}
-#adminScreen{display:none;flex:1;flex-direction:column}
-#adminScreen.visible{display:flex}
-.admin-panel{max-width:680px;width:100%;margin:0 auto;padding:20px 16px;flex:1}
-.admin-panel h2{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px}
-.client-form{background:var(--white);border:2px solid var(--main-light);border-radius:16px;padding:18px;margin-bottom:20px}
-.client-form h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px}
+.footer-note{display:flex;justify-content:center;gap:12px;align-items:center;font-size:10px;color:#D4A0B0;margin-top:8px}
+.link-btn{background:none;border:none;color:#D4A0B0;font-size:10px;text-decoration:underline;cursor:pointer;font-family:inherit}
+.panel{max-width:680px;width:100%;margin:0 auto;padding:20px 16px 40px;flex:1}
+.panel h2{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px}
+.card{background:var(--white);border:2px solid var(--main-light);border-radius:16px;padding:18px;margin-bottom:20px}
+.card h3{font-size:14px;font-weight:700;margin-bottom:12px}
+.card p.hint{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:10px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.form-grid .full{grid-column:1/-1}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr}}
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:4px}
-.form-group input,.form-group textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:var(--text);background:var(--main-pale);outline:none;transition:border-color .2s}
+.form-group input,.form-group textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;font-family:inherit;font-size:13px;color:var(--text);background:var(--main-pale);outline:none}
 .form-group input:focus,.form-group textarea:focus{border-color:var(--main);background:#fff}
 .form-group textarea{resize:vertical;min-height:80px;line-height:1.6}
-.save-btn{width:100%;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:12px;padding:12px;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:opacity .2s}
-.save-btn:hover{opacity:.85}
-.csv-bar{display:flex;gap:10px;margin-bottom:16px}
-.csv-btn{flex:1;border-radius:10px;padding:10px;font-size:13px;font-weight:600;font-family:'Noto Sans JP',sans-serif;cursor:pointer;border:2px solid;transition:opacity .2s;text-align:center}
-.csv-btn:hover{opacity:.8}
-.csv-export{background:#C8F4F2;color:#2BB5AC;border-color:#4ECDC4}
-.csv-import{background:var(--main-pale);color:var(--accent);border-color:var(--main-light);display:flex;align-items:center;justify-content:center}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{flex:1;min-width:120px;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:2px solid var(--main-light);background:var(--main-pale);color:var(--accent);text-align:center}
+.btn.primary{background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;color:#fff}
+.btn.teal{background:#C8F4F2;color:#1E8F88;border-color:#4ECDC4}
+.btn.danger{background:#FFF0F0;color:var(--danger);border-color:#FFCECE}
+.btn:hover{opacity:.85}
 #csvFileInput{display:none}
-.client-list{display:flex;flex-direction:column;gap:12px}
-.client-card{background:var(--white);border:2px solid var(--main-light);border-radius:14px;padding:14px 16px}
-.client-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.client-name{font-size:14px;font-weight:700;color:var(--text)}
-.client-actions{display:flex;gap:8px}
-.edit-btn,.del-btn{border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;font-weight:500}
-.edit-btn{background:var(--main-pale);color:var(--accent);border:1.5px solid var(--main-light)}
-.del-btn{background:#FFF0F0;color:#E05555;border:1.5px solid #FFCECE}
-.client-memo{font-size:12px;color:var(--muted);line-height:1.7;white-space:pre-wrap}
-.client-label{font-size:11px;font-weight:500;color:var(--main);margin-bottom:2px}
+.search-box{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:13px;background:#fff;margin-bottom:12px;outline:none}
+.list{display:flex;flex-direction:column;gap:12px}
+.item{background:var(--white);border:2px solid var(--main-light);border-radius:14px;padding:14px 16px}
+.item-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.item-title{font-size:14px;font-weight:700}
+.item-actions{display:flex;gap:6px;flex-shrink:0}
+.sm-btn{border-radius:8px;padding:4px 10px;font-size:11px;font-family:inherit;cursor:pointer;font-weight:500;background:var(--main-pale);color:var(--accent);border:1.5px solid var(--main-light)}
+.sm-btn.danger{background:#FFF0F0;color:var(--danger);border-color:#FFCECE}
+.kv{display:grid;grid-template-columns:104px 1fr;gap:3px 10px;font-size:12px;line-height:1.7}
+.kv dt{color:var(--main);font-weight:500}
+.kv dd{color:var(--muted);white-space:pre-wrap;word-break:break-word}
 .empty-msg{text-align:center;color:var(--muted);font-size:13px;padding:30px 0}
+.count-label{font-size:12px;color:var(--muted);margin-bottom:8px}
+.status-line{font-size:12px;margin-top:8px;min-height:18px}
+.status-line.ok{color:#2E7D32}.status-line.ng{color:var(--danger)}
 .pin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
 .pin-overlay.visible{display:flex}
-.pin-dialog{background:#fff;border-radius:20px;padding:28px 24px;width:300px;text-align:center}
-.pin-dialog h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.pin-dialog{background:#fff;border-radius:20px;padding:28px 24px;width:300px;max-width:calc(100% - 32px);text-align:center}
+.pin-dialog h3{font-size:16px;font-weight:700;margin-bottom:8px}
 .pin-dialog p{font-size:12px;color:var(--muted);margin-bottom:16px}
 .pin-input{width:100%;border:2px solid var(--main-light);border-radius:10px;padding:10px;font-size:18px;text-align:center;letter-spacing:6px;outline:none;font-family:monospace}
-.pin-input:focus{border-color:var(--main)}
-.pin-btn{margin-top:12px;width:100%;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:10px;padding:10px;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer}
-.pin-error{color:#E05555;font-size:12px;margin-top:8px}
-.feedback-bar{display:flex;gap:8px;margin-top:8px;margin-left:48px}
-.fb-btn{border:none;border-radius:20px;padding:5px 12px;font-size:11px;font-family:"Noto Sans JP",sans-serif;cursor:pointer;font-weight:500;transition:all .2s}
+.pin-error{color:var(--danger);font-size:12px;margin-top:8px;min-height:16px}
+.feedback-bar{display:flex;gap:8px;margin-left:48px;margin-top:-8px}
+.fb-btn{border-radius:20px;padding:5px 12px;font-size:11px;font-family:inherit;cursor:pointer;font-weight:500}
 .fb-good{background:#E8F5E9;color:#2E7D32;border:1.5px solid #A5D6A7}
-.fb-good:hover{background:#C8E6C9}
 .fb-bad{background:#FFF0F4;color:var(--accent);border:1.5px solid var(--main-light)}
-.fb-bad:hover{background:var(--main-light)}
-.feedback-form{margin-top:8px;margin-left:48px;background:var(--white);border:2px solid var(--main-light);border-radius:14px;padding:12px}
+.feedback-form{margin-left:48px;background:var(--white);border:2px solid var(--main-light);border-radius:14px;padding:12px}
 .feedback-form p{font-size:12px;color:var(--muted);margin-bottom:8px}
-.feedback-form textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px;font-family:"Noto Sans JP",sans-serif;font-size:13px;color:var(--text);background:var(--main-pale);outline:none;resize:vertical;min-height:60px}
-.feedback-form textarea:focus{border-color:var(--main);background:#fff}
-.fb-save{margin-top:8px;background:linear-gradient(135deg,#FF8FAB,#FF6B9D);border:none;border-radius:8px;padding:7px 16px;color:#fff;font-size:12px;font-weight:700;font-family:"Noto Sans JP",sans-serif;cursor:pointer}
+.feedback-form textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px;font-family:inherit;font-size:13px;background:var(--main-pale);outline:none;resize:vertical;min-height:70px}
 .chat-wrapper::-webkit-scrollbar{width:4px}
 .chat-wrapper::-webkit-scrollbar-thumb{background:var(--main-light);border-radius:4px}
 </style>
@@ -116,59 +117,116 @@ textarea::placeholder{color:#D4A0B0}
 <body>
 <header>
   <div class="header-left">
-    <div class="avatar"><img src="icon.png" alt="icon"></div>
+    <div class="avatar"><img src="icon.png" alt=""></div>
     <div class="header-info">
       <h1>エニクックの事について</h1>
       <p><span class="status-dot"></span>合同会社エニクック｜社内AIアシスタント</p>
     </div>
   </div>
-  <button class="admin-btn" id="adminBtnEl">⚙ 管理</button>
+  <button class="admin-btn" id="adminBtn">⚙ 管理</button>
 </header>
 
 <div class="tab-bar" id="tabBar">
-  <div class="tab active" id="tabChatEl">💬 チャット</div>
-  <div class="tab" id="tabAdminEl">🏢 取引先管理</div>
+  <div class="tab active" data-tab="chat">💬 チャット</div>
+  <div class="tab" data-tab="clients">🏢 取引先管理</div>
+  <div class="tab" data-tab="learned">📚 学習した回答</div>
+  <div class="tab" data-tab="settings">🔧 設定</div>
 </div>
 
-<div id="chatScreen">
+<!-- チャット -->
+<div class="screen visible" id="screen-chat">
   <div class="chat-wrapper" id="chatArea">
-    <div class="intro-card">
-      エニクックのことについて、気軽に質問してみてください 😊
-    </div>
+    <div class="intro-card">エニクックのことについて、気軽に質問してみてください 😊</div>
   </div>
   <div class="input-area">
     <div class="input-inner">
       <textarea id="inputBox" placeholder="なんでも聞いてみてください…" rows="1"></textarea>
-      <button id="sendBtn">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-      </button>
+      <button id="sendBtn" aria-label="送信"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
     </div>
-    <p class="footer-note">※重要な判断は直接ご確認ください。</p>
+    <div class="footer-note">
+      <span>※重要な判断は直接ご確認ください。</span>
+      <button class="link-btn" id="resetChatBtn">会話をリセット</button>
+    </div>
   </div>
 </div>
 
-<div id="adminScreen">
-  <div class="admin-panel">
+<!-- 取引先管理 -->
+<div class="screen" id="screen-clients">
+  <div class="panel">
     <h2>🏢 取引先管理</h2>
-    <div class="client-form">
+    <div class="card">
       <h3 id="formTitle">➕ 取引先を追加</h3>
       <input type="hidden" id="editId">
-      <div class="form-group"><label>取引先名</label><input type="text" id="clientName" placeholder="例：キヨトク"></div>
-      <div class="form-group"><label>正式名称</label><input type="text" id="clientFormal" placeholder="例：株式会社キヨトク"></div>
-      <div class="form-group"><label>発送先名</label><input type="text" id="clientShipName" placeholder="例：株式会社キヨトク 倉庫担当"></div>
-      <div class="form-group"><label>郵便番号</label><input type="text" id="clientZip" placeholder="例：812-0882"></div>
-      <div class="form-group"><label>住所</label><input type="text" id="clientAddress" placeholder="例：福岡県福岡市博多区麦野４丁目２５番２４号"></div>
-      <div class="form-group"><label>担当者</label><input type="text" id="clientContact" placeholder="例：田中様"></div>
-      <div class="form-group"><label>電話番号</label><input type="text" id="clientPhone" placeholder="例：092-586-9633"></div>
-      <div class="form-group"><label>商品</label><input type="text" id="clientProduct" placeholder="例：ダメヤカレー・チャーシュー"></div>
-      <div class="form-group"><label>発送方法・注意事項</label><textarea id="clientMemo" placeholder="例：返信FAXで引取り日連絡。代引き手数料440円忘れずに。"></textarea></div>
-      <button class="save-btn" id="saveClientBtn">💾 保存する</button>
+      <div class="form-grid">
+        <div class="form-group"><label>取引先名</label><input type="text" id="f_name" placeholder="例：キヨトク"></div>
+        <div class="form-group"><label>正式名称</label><input type="text" id="f_formal" placeholder="例：株式会社キヨトク"></div>
+        <div class="form-group full"><label>発送先名</label><input type="text" id="f_shipName" placeholder="例：株式会社キヨトク 倉庫担当"></div>
+        <div class="form-group"><label>郵便番号</label><input type="text" id="f_zip" placeholder="例：812-0882"></div>
+        <div class="form-group"><label>電話番号</label><input type="text" id="f_phone" placeholder="例：092-586-9633"></div>
+        <div class="form-group full"><label>住所</label><input type="text" id="f_address" placeholder="例：福岡県福岡市博多区麦野４丁目２５番２４号"></div>
+        <div class="form-group"><label>担当者</label><input type="text" id="f_contact" placeholder="例：田中様"></div>
+        <div class="form-group"><label>商品</label><input type="text" id="f_product" placeholder="例：ダメヤカレー・チャーシュー"></div>
+        <div class="form-group full"><label>発送方法・注意事項</label><textarea id="f_memo" placeholder="例：返信FAXで引取り日連絡。代引き手数料440円忘れずに。"></textarea></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" id="saveClientBtn">💾 保存する</button>
+        <button class="btn" id="cancelEditBtn" style="display:none">キャンセル</button>
+      </div>
     </div>
-    <div class="csv-bar">
-      <button class="csv-btn csv-export" id="exportCsvBtn">📥 CSVエクスポート</button>
-      <label class="csv-btn csv-import">📤 CSVインポート<input type="file" id="csvFileInput" accept=".csv"></label>
+    <div class="card">
+      <h3>CSVの入出力</h3>
+      <p class="hint">取り込み時、同じ取引先名のデータは上書き、新しい取引先は追加されます。<br>列：取引先名・正式名称・発送先名・郵便番号・住所・担当者・電話番号・商品・発送方法・注意事項</p>
+      <div class="btn-row">
+        <button class="btn teal" id="exportCsvBtn">📥 CSVエクスポート</button>
+        <label class="btn" for="csvFileInput">📤 CSVインポート</label>
+        <input type="file" id="csvFileInput" accept=".csv,text/csv">
+        <button class="btn danger" id="deleteAllBtn">🗑 全件削除</button>
+      </div>
+      <div class="status-line" id="csvStatus"></div>
     </div>
-    <div class="client-list" id="clientList"><p class="empty-msg">取引先を追加してください</p></div>
+    <input type="text" class="search-box" id="clientSearch" placeholder="🔍 取引先を検索（名前・商品・住所など）">
+    <div class="count-label" id="clientCount"></div>
+    <div class="list" id="clientList"><p class="empty-msg">読み込み中…</p></div>
+  </div>
+</div>
+
+<!-- 学習した回答 -->
+<div class="screen" id="screen-learned">
+  <div class="panel">
+    <h2>📚 学習した回答</h2>
+    <p class="hint" style="font-size:12px;color:var(--muted);margin-bottom:12px">チャットの「👎 修正が必要」で保存した回答です。似た質問が来たとき、この回答が最優先で使われます。</p>
+    <div class="list" id="learnedList"><p class="empty-msg">読み込み中…</p></div>
+  </div>
+</div>
+
+<!-- 設定 -->
+<div class="screen" id="screen-settings">
+  <div class="panel">
+    <h2>🔧 設定</h2>
+    <div class="card">
+      <h3>Gemini APIキー</h3>
+      <p class="hint">この端末に保存されます。端末ごとに一度だけ設定してください。</p>
+      <div class="form-group"><input type="password" id="apiKeyInput" placeholder="APIキーを貼り付け"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="saveKeyBtn">保存</button>
+        <button class="btn teal" id="testKeyBtn">動作テスト</button>
+        <button class="btn danger" id="clearKeyBtn">削除</button>
+      </div>
+      <div class="status-line" id="keyStatus"></div>
+    </div>
+    <div class="card">
+      <h3>AIモデル</h3>
+      <p class="hint">使えなくなったモデルは自動で次のモデルに切り替わります。</p>
+      <div class="kv"><dt>使用中</dt><dd id="currentModel">—</dd><dt>候補</dt><dd id="modelList">—</dd></div>
+      <div class="btn-row" style="margin-top:12px"><button class="btn" id="refreshModelsBtn">モデル一覧を再取得</button></div>
+      <div class="status-line" id="modelStatus"></div>
+    </div>
+    <div class="card">
+      <h3>アプリの更新</h3>
+      <p class="hint">画面が古いまま表示される時に押してください。キャッシュを消して最新版を読み込みます。</p>
+      <div class="kv"><dt>バージョン</dt><dd id="appVersion"></dd></div>
+      <div class="btn-row" style="margin-top:12px"><button class="btn primary" id="forceUpdateBtn">最新版に更新</button></div>
+    </div>
   </div>
 </div>
 
@@ -176,9 +234,12 @@ textarea::placeholder{color:#D4A0B0}
   <div class="pin-dialog">
     <h3>🔐 管理画面</h3>
     <p>PINコードを入力してください</p>
-    <input type="password" class="pin-input" id="pinInput" maxlength="4" placeholder="••••">
+    <input type="password" class="pin-input" id="pinInput" maxlength="4" inputmode="numeric" placeholder="••••">
     <div class="pin-error" id="pinError"></div>
-    <button class="pin-btn" id="pinBtnEl">入力</button>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn" id="pinCancelBtn">閉じる</button>
+      <button class="btn primary" id="pinOkBtn">入力</button>
+    </div>
   </div>
 </div>
 
@@ -186,734 +247,848 @@ textarea::placeholder{color:#D4A0B0}
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-var ADMIN_PIN = "1234";
-var clientsData = [];
-var messages = [];
-var isLoading = false;
+'use strict';
+var APP_VERSION = '2026.09.29';
+var ADMIN_PIN = '1234';
+var DEFAULT_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest', 'gemini-flash-lite-latest'];
+var MAX_HISTORY = 20;
 
-var SYSTEM_PROMPT_BASE = 'あなたは合同会社エニクックの代表・福士さんの分身AIアシスタントです。\n社内スタッフからの質問に対して、以下の福士さんの価値観・判断基準をもとに、福士さんらしい温かみのある敬語で回答してください。\n現場に直接行けない状況を前提に、言葉だけで状況を確認しながらアドバイスしてください。\n\n【創業の想いと経営哲学】\n- 創業理由：小ロットで諦めざるを得ない方を減らしたい。どんな小さな可能性も大切にする。お客様の大切な想いを、商品という形で未来へつなぐために創業した。\n- 社名「エニクック」の由来：レシピがあればなんでも作るという想いから命名。\n- 「いい商品」の定義：お客様の心も体も精神も幸せになれる商品。\n\n【エニクックの強み】\n- 無添加・有機加工品の製造ができる\n- 小ロットOEM製造が可能\n- 有機JAS・JFS-B認証取得済み\n- 小回りがきく、柔軟な対応ができる\n\n【品質管理の判断基準】\n- 品質トラブルが起きたら：①まず謝る ②出荷停止・回収 ③再発防止策を考える ④実行に移す\n- 機械の温度は完璧と思ってはいけない\n- 連続して同じ不良が出たら機械・設備を疑う\n- 商品の誠実さは絶対に譲れない\n\n【コスト感覚】\n- コストの優先順位：材料費（最重要）→人件費→光熱費\n- 送料が含まれているかどうかは特に注意\n\n【製造指示のスタイル】\n- まず口頭で説明する\n- それでもわからなければ実際にやって見せる\n- 繰り返し問題が出るようであれば手順書を作成する\n\n【価格設定】\n- コスト積み上げ方式で価格を決める\n- 基本利益率は20%\n- 希少な材料や手間がかかる場合は利益率を上げる\n- 値下げ交渉には加工費の削減・効率化で対応\n- 限界ラインでは正直に伝える\n\n【取引先との付き合い方】\n- できていると思わず、常に謙虚に\n- ないがしろにしない、丁寧に扱う\n- 問題が起きても一つ一つ誠実に解決していく\n\n【スタッフへの想い】\n- チャレンジする姿勢を持ってほしい\n- 失敗していい、責任は自分（福士）が全部取る\n- 一緒に成長していきたい\n\n【クレーム対応フロー】\n①まずお客様に謝罪する\n②LINEのクレームラインに報告する\n③2時間以内に工場と相談して対応策をまとめる\n④2時間で解決できない場合は福士に直接電話する\n⑤業者連絡が必要な場合は福士に確認する\n\n【会社情報】\n- 会社名：合同会社エニクック / 所在地：福岡県筑紫野市\n- 事業：食品OEM製造（小ロット対応、自社レシピ、健康志向商品）\n- 主要商品：筑紫ちゃんカレー（180g、680円）\n- 有機JAS・JFS-B認証取得済み\n\n【よくあるお問い合わせQ&A】\nQ:どのような製品のOEMが可能ですか？ A:レトルトパウチ食品（カレー、スープ、惣菜、離乳食等）の製造が可能です。\nQ:最低ロットは？ A:180g：1,000袋〜、200g以上：700袋〜。初回は100袋〜対応可能です。\nQ:サンプル費用は？ A:50,000円（税別）／2回分です。\nQ:製品化までの期間は？ A:原料・資材確定後、約45〜60日です。\nQ:単価目安は？ A:約230円〜280円／袋（税別）が平均です。\nQ:無添加対応は？ A:可能です。弊社の得意分野です。\nQ:有機JAS認証商品として販売できますか？ A:できます。\nQ:冷凍食品の製造は？ A:できます。\nQ:ヴィーガン対応は？ A:可能です。\nQ:ハラール対応は？ A:できません。\nQ:アルコール入り商品は？ A:内容によりますができます。\nQ:お菓子・デザート系は？ A:できません。\nQ:持ち込みレシピでの製造は？ A:可能です。\nQ:原料支給は？ A:一部支給・全支給どちらも対応可能です。\nQ:国産原料にこだわれますか？ A:できます。\nQ:有機原料の調達は？ A:調達可能です。\nQ:支払い条件は？ A:初回は前払いです。\nQ:見積もりから製造開始までの最短期間は？ A:最短で2ヶ月です。\nQ:工場見学はできますか？ A:できますが日程は調整させてください。\nQ:守秘義務契約は？ A:守秘義務契約書を交わさせていただきます。\nQ:レシピの権利は？ A:お客様にあります。\nQ:賞味期限検査の費用は？ A:加速検査は15,000円です。\nQ:アレルゲン対応は？ A:可能です。基本1日1商品製造です。\nQ:納品は全国対応？ A:対応しております。\nQ:冷凍・冷蔵納品は？ A:どちらも対応可能です。\nQ:打ち合わせはオンラインでも？ A:可能です。\nQ:連絡手段は？ A:メール・電話・LINEどの手段でも大丈夫です。\nQ:返答時間は？ A:営業時間内（平日9時〜17時）に当日または翌営業日までにご返答いたします。\nQ:担当者は固定？ A:固定いたします。\nQ:2回目以降のリードタイムは？ A:ご相談いただければ1週間程で製造できます。\nQ:定期製造の契約は？ A:できます。\nQ:急ぎの製造は？ A:可能です。\nQ:コラボ商品の製造は？ A:可能です。\nQ:パッケージデザインの相談は？ A:専門の方をご紹介します。\nQ:販売先の紹介は？ A:基本的には行っておりません。\nQ:衛生管理は？ A:JFS-B規格認証取得済みで毎年監査を受けています。\nQ:異物混入対策は？ A:金属探知機を使用しております。\nQ:環境への配慮は？ A:福岡SDGsの登録をしております。\nQ:フードロス削減の取り組みは？ A:農産物や海産物の廃棄になるような商品を商品化しております。\nQ:製造後の商品保管は？ A:弊社では保管できません。\nQ:栄養成分表示の作成は？ A:商品規格書を作成いたします。\n\n【メール返信サポート】\nお客様からのメール文が貼り付けられた場合、そのメール1通に対して1つの返信メールだけを作成してください。\n複数のパターンや複数の宛先への返信は作成しないでください。\n形式：件名・宛名・本文・署名（合同会社エニクック）\nメールの内容に対してのみ回答し、関係のない情報は含めないでください。\n作成後「この返信でよろしければ送信してください。修正が必要な場合はお知らせください。」と一言添えてください。\n\n回答は200〜300文字程度を目安に、福士さんらしい温かみのある敬語でお答えください。\n自然に福士さんとして回答してください。';
+/* ================= システムプロンプト ================= */
+var SYSTEM_PROMPT_BASE = [
+'あなたは合同会社エニクックの代表・福士さんの分身AIアシスタントです。',
+'社内スタッフからの質問に対して、以下の福士さんの価値観・判断基準をもとに、福士さんらしい温かみのある敬語で回答してください。',
+'現場に直接行けない状況を前提に、言葉だけで状況を確認しながらアドバイスしてください。',
+'',
+'【創業の想いと経営哲学】',
+'- 創業理由：小ロットで諦めざるを得ない方を減らしたい。どんな小さな可能性も大切にする。お客様の大切な想いを、商品という形で未来へつなぐために創業した。',
+'- 社名「エニクック」の由来：レシピがあればなんでも作るという想いから命名。型にはまらない商品製造へのチャレンジ精神が込められている。',
+'- 「いい商品」の定義：お客様の心も体も精神も幸せになれる商品。',
+'- お客様への想い：「全部が全部ではありませんが、体に良い商品を作っています」という誠実な姿勢。',
+'',
+'【エニクックの強み】',
+'- 無添加・有機加工品の製造ができる / 小ロットOEM製造が可能 / 有機JAS・JFS-B認証取得済み / 小回りがきく',
+'',
+'【未来ビジョン】',
+'- 商品づくりのオンリーワン企業、無理難題も商品化できる企業、「エニクックに頼めばなんとかなる」と言われる存在になる',
+'- 世界へ向けて日本産の体に良い商品を発信する。筑紫野市と共に成長する。取引先と頼って頼られる関係を築く',
+'',
+'【人柄と話し方】',
+'- 誠実で現場感覚がある。難しい言葉を使わずわかりやすく話す。「自分だったら」という視点を大切にする',
+'- 叱るより一緒に考える。謙虚で「できている」とは思わない。スタッフにも敬語で話し、感謝の気持ちを持っている',
+'',
+'【商品開発・案件対応】',
+'- 「受けられない」ではなく「どうすればできるか」を工場と一緒に考える',
+'- 初めてのお問い合わせのお客様には「商品開発は難しくない」と感じてもらいたい',
+'',
+'【品質管理】',
+'- 品質トラブル時：①自分に非があればまず謝る ②該当商品の出荷を即停止・回収 ③みんなで再発防止策を考える ④実行に移す',
+'- 機械の温度は完璧と思ってはいけない。連続して同じ不良が出たらレシピより先に機械・設備を疑う',
+'- 商品の誠実さは絶対に譲れない：確かな材料、人の体に良い、手を抜かない、胸を張って伝えられる商品',
+'',
+'【コスト感覚】材料費（最重要）→人件費→光熱費。送料が含まれているかは特に注意。',
+'【製造指示】まず口頭で説明→わからなければやって見せる→繰り返し問題が出るなら手順書を作る。',
+'【価格設定】コスト積み上げ方式。基本利益率20%。希少な材料・手間がかかる場合は上げる。材料費は下げない。値下げ交渉は加工費の削減・効率化で対応し、限界では「ここまで下げると何をやっているかわからない商品になる」と正直に伝える。',
+'【取引先】できていると思わず謙虚に。ないがしろにせず丁寧に。問題は一つ一つ誠実に解決する。',
+'【販売戦略】まず地元（筑紫野市・福岡）のお客様に食べてもらうことが最優先。',
+'【スタッフへの想い】チャレンジしてほしい。自分たちの商品に自信を持ってほしい。失敗していい、責任は福士が全部取る。人が病気になったり死なない限りは叱らない。',
+'',
+'【クレーム対応フロー（社内向け）】',
+'①まずお客様・取引先に謝罪し、確認次第早急に返答する旨を伝える ②LINEのクレームラインに報告 ③2時間以内に工場と相談して対応策をまとめる ④2時間で解決できない場合は福士に直接電話して判断を仰ぐ ⑤業者連絡が必要な場合は福士に確認する',
+'',
+'【会社情報】合同会社エニクック（福岡県筑紫野市）。食品OEM製造。主要商品：筑紫ちゃんカレー（180g、680円）。有機JAS・JFS-B認証取得済み。福岡SDGs登録。',
+'',
+'【よくあるお問い合わせQ&A】',
+'製造可否：レトルトパウチ食品（カレー、スープ、惣菜、離乳食、フィリング等）が可能。レシピがなくても開発費をいただき開発から対応。持ち込みレシピ可。原料は一部支給・全支給どちらも可。トレー・カップ・瓶は不可（パウチのみ）。無添加・化学調味料不使用は得意分野。有機原料可。離乳食・介護食の実績多数。内容量は1袋50g〜2kg（冷凍ソースのみ3kgまで）。冷凍食品（非レトルト）可。お菓子・デザート（プリン・ゼリー）不可。アルコール入りは内容によるが可。ヴィーガン可。ハラール不可。印刷済みパウチは支給いただければ製造可。',
+'ロット：180gは1,000袋〜、200g以上は700袋〜。相談いただければ100袋〜。経済ロットは3,000〜5,000袋。初回は各重量100袋→2回目半ロット→3回目1ロットと段階的に。',
+'試作：パターン違い3種類を製造。サンプル費用50,000円（税別）／2回分。試作期間はレシピ確定後約2〜3週間。3回目以降は通常50,000円、軽微な調整は20,000円（税別）。',
+'価格：レトルトパウチのみの単価は約230〜280円／袋（税別）が平均。箱詰め50円／袋。ラベル貼り1袋40円（形状による）。見積には1袋内容量とレシピまたは商品規格書が必要。見積は商品決定後またはサンプル作成後。初回は前払い。原料高騰時は価格見直しあり。単価は1ヶ月の製造量で変化。',
+'納期：原料・資材確定後約45〜60日。見積から製造開始まで最短2ヶ月。2回目以降は相談いただければ1週間程。急ぎ・追加製造・定期製造契約・コラボ商品も可。大ロットは分納相談可。',
+'品質・認証：JFS-B認証取得済み（毎年監査）。金属探知機使用。基本1日1商品製造でコンタミ低減。有機JAS商品として販売可。賞味期限は初回1年、2年後に検査して陰性なら2年に延長可。加速検査は3袋で15,000円。検査成績書は初回無料、2回目以降5,000円。工場見学は日程調整のうえ可。',
+'開発・契約：コンセプトから相談可。守秘義務契約書を交わす。他社へのレシピ流用なし。レシピの権利はお客様。契約書は交わせる。流れは「レシピ確認→サンプル作成→商品製造」。まずレシピを確認させていただく。',
+'工程：肉は湯煎可、焼・煮込み不可。焼き目不可。炒めは直火でないため色が変わるまでは難しい。とろみは小麦粉・片栗粉・コーンスターチ・米粉。固形物は20〜30mm程度。レトルト加熱で香りは飛ぶ。',
+'配送・保管：着払い・元払いどちらも可、送料込みも可。全国対応。冷凍・冷蔵納品可。製造後の商品保管は不可。原料は賞味期限内で保管。',
+'表示：栄養成分・食品ラベル・アレルゲンは商品規格書を作成してご確認いただく。',
+'その他：原料調達・国産・有機原料の調達可。打ち合わせはオンライン・訪問どちらも可。商品名・パッケージデザインは専門の方を紹介。販売先紹介は基本行っていない。得意はカレー・鶏飯の素。取引先は店舗経営・法人が多い。連絡はメール・電話・LINEどれでも可。返答は営業時間内（平日9〜17時）に当日または翌営業日。担当者は固定。フードロス削減として廃棄予定の農産物・海産物を商品化。エコ包材は確認のうえ対応。',
+'',
+'【接客・お客様対応の基本（接客マニュアルより）】',
+'- お客様を家族や友人だと思って接する。心のこもったおもてなし（ホスピタリティー）が愛顧客を増やす。',
+'- 正しい言葉遣い：すみません→大変申し訳ございません／わかりました→かしこまりました／ちょっと待って→少々お待ちくださいませ／お待ちどうさま→お待たせいたしました／今持ってきます→只今お持ちいたします。',
+'- お願いするときは「恐れ入りますが」を添える。断定的でなく疑問形で要望を確認する。',
+'- お詫びは誠心誠意。お詫びの後は迅速に後処理をし、上司に報告する。',
+'- お客様のニーズを先読みし、予想を超えた対応を心がける。',
+'',
+'【メール返信サポート】',
+'スタッフがお客様からのメール文を貼り付けた場合：',
+'- そのメール1通に対して、返信メールを1つだけ作成する。複数パターンや複数宛先の返信は作らない。',
+'- メールに書かれている内容にだけ答え、聞かれていない情報は含めない。',
+'- 形式：件名・宛名・本文・署名（合同会社エニクック）。',
+'- 答えられない内容は「確認の上、改めてご連絡いたします」とする。',
+'- 最後に「この返信でよろしければ送信してください。修正が必要な場合はお知らせください。」と一言だけ添える。',
+'',
+'【回答のルール】',
+'- 通常の質問は200〜300文字程度。メール返信は必要な長さで。',
+'- 下に「製造日報」「スケジュール」「取引先情報」のデータがある場合は、そのデータだけを根拠に答え、データにないことは推測で答えない。',
+'- 「私はAIです」などとは言わず、自然に福士さんとして回答する。'
+].join('\n');
 
-// Firebase設定
-var firebaseConfig = {
+/* ================= Firebase ================= */
+// 通信状態が悪くFirebaseが読み込めなくても、画面操作は止まらないようにする
+var db = null, nippoDB = null, scheduleDB = null;
+var FB_OK = typeof firebase !== 'undefined';
+if (FB_OK) try { db = firebase.firestore(firebase.initializeApp({
   apiKey: "AIzaSyBCL7dn76AlywG98sgDZ5b5jZfTWyHp7FE",
   authDomain: "fukushi-bot.firebaseapp.com",
   projectId: "fukushi-bot",
   storageBucket: "fukushi-bot.firebasestorage.app",
   messagingSenderId: "1022545354265",
   appId: "1:1022545354265:web:41e7d5fc32dbeea5ba1488"
-};
+})); } catch (e) { console.warn('DB初期化エラー', e); }
+if (FB_OK) try {
+  nippoDB = firebase.firestore(firebase.initializeApp({
+    apiKey: "AIzaSyBMn_7cMty6SOmay3fwTZRHNjIsNq5XFx8",
+    authDomain: "seizou-nippo.firebaseapp.com",
+    projectId: "seizou-nippo",
+    storageBucket: "seizou-nippo.firebasestorage.app",
+    messagingSenderId: "484585876310",
+    appId: "1:484585876310:web:f5b641ddf222138a2d84f7"
+  }, "nippo"));
+} catch (e) { console.warn('日報DB初期化エラー', e); }
+if (FB_OK) try {
+  scheduleDB = firebase.database(firebase.initializeApp({
+    apiKey: "AIzaSyDrZNjszozY7J_RvcPI3JaB9J1VLuGRuGk",
+    authDomain: "factory-schedule-1e5d5.firebaseapp.com",
+    databaseURL: "https://factory-schedule-1e5d5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "factory-schedule-1e5d5",
+    storageBucket: "factory-schedule-1e5d5.firebasestorage.app",
+    messagingSenderId: "926690797990",
+    appId: "1:926690797990:web:a2e5413ed5c3d01a42c767"
+  }, "schedule"));
+} catch (e) { console.warn('スケジュールDB初期化エラー', e); }
 
-var nippoConfig = {
-  apiKey: "AIzaSyBMn_7cMty6SOmay3fwTZRHNjIsNq5XFx8",
-  authDomain: "seizou-nippo.firebaseapp.com",
-  projectId: "seizou-nippo",
-  storageBucket: "seizou-nippo.firebasestorage.app",
-  messagingSenderId: "484585876310",
-  appId: "1:484585876310:web:f5b641ddf222138a2d84f7"
-};
-
-var app = firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore(app);
-var nippoDB = null;
-try {
-  var nippoApp = firebase.initializeApp(nippoConfig, "nippo");
-  nippoDB = firebase.firestore(nippoApp);
-} catch(e) { console.warn("nippo DB error:", e); }
-
-// スケジュールDB設定
-var scheduleConfig = {
-  apiKey: "AIzaSyDrZNjszozY7J_RvcPI3JaB9J1VLuGRuGk",
-  authDomain: "factory-schedule-1e5d5.firebaseapp.com",
-  databaseURL: "https://factory-schedule-1e5d5-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "factory-schedule-1e5d5",
-  storageBucket: "factory-schedule-1e5d5.firebasestorage.app",
-  messagingSenderId: "926690797990",
-  appId: "1:926690797990:web:a2e5413ed5c3d01a42c767"
-};
-var scheduleDB = null;
-try {
-  var scheduleApp = firebase.initializeApp(scheduleConfig, "schedule");
-  scheduleDB = firebase.database(scheduleApp);
-} catch(e) { console.warn("schedule DB error:", e); }
-
-// 製造日報取得
-function getTodayStr() {
-  var now = new Date();
-  var y = now.getFullYear();
-  var m = String(now.getMonth()+1).padStart(2,'0');
-  var d = String(now.getDate()).padStart(2,'0');
-  return y + '-' + m + '-' + d;
-}
-
-function fetchNippoData(targetDate, fromDate, toDate, productName) {
-  if (!nippoDB) return Promise.resolve([]);
-  return nippoDB.collection("nippo").get().then(function(snapshot) {
-    var reports = [];
-    snapshot.forEach(function(d) {
-      var data = d.data();
-      if (!data.date) return;
-
-      // 商品名フィルター
-      if (productName) {
-        var matched = false;
-        ['batch1','batch2','batch3'].forEach(function(b) {
-          if (data[b] && data[b].name && data[b].name.includes(productName)) matched = true;
-        });
-        if (data.semiProduct && data.semiProduct.includes(productName)) matched = true;
-        if (!matched) return;
-      }
-
-      if (targetDate && data.date === targetDate) { reports.push(data); return; }
-      if (fromDate && toDate && data.date >= fromDate && data.date <= toDate) { reports.push(data); return; }
-      if (!targetDate && !fromDate) reports.push(data);
-    });
-    reports.sort(function(a,b) { return b.date.localeCompare(a.date); });
-    return reports.slice(0, 20);
-  }).catch(function() { return []; });
-}
-
-// 商品名で日報を検索して製造日一覧を返す
-function searchNippoByProduct(productName) {
-  if (!nippoDB || !productName) return Promise.resolve([]);
-  return nippoDB.collection("nippo").get().then(function(snapshot) {
-    var results = [];
-    snapshot.forEach(function(d) {
-      var data = d.data();
-      if (!data.date) return;
-      var matchedBatches = [];
-      ['batch1','batch2','batch3'].forEach(function(b) {
-        if (data[b] && data[b].name && data[b].name.includes(productName)) {
-          matchedBatches.push(data[b].name + '（' + (data[b].qty||'-') + '袋）');
-        }
-      });
-      if (data.semiProduct && data.semiProduct.includes(productName)) {
-        matchedBatches.push(data.semiProduct);
-      }
-      if (matchedBatches.length > 0) {
-        results.push({date: data.date, author: data.author, batches: matchedBatches});
-      }
-    });
-    results.sort(function(a,b) { return b.date.localeCompare(a.date); });
-    return results;
-  }).catch(function() { return []; });
-}
-
-// テキストから日付を解析する関数
-function parseDateFromText(text) {
-  var today = new Date();
-  var todayStr = getTodayStr();
-
-  // 今日・本日
-  if (text.match(/今日|本日/)) return {type:'single', date: todayStr};
-
-  // 昨日
-  if (text.match(/昨日/)) {
-    var d = new Date(today); d.setDate(d.getDate()-1);
-    return {type:'single', date: d.toISOString().slice(0,10)};
-  }
-
-  // 今週
-  if (text.match(/今週/)) {
-    var mon = new Date(today);
-    mon.setDate(today.getDate() - today.getDay() + (today.getDay()===0 ? -6 : 1));
-    return {type:'range', from: mon.toISOString().slice(0,10), to: todayStr};
-  }
-
-  // 先週
-  if (text.match(/先週/)) {
-    var lastMon = new Date(today);
-    lastMon.setDate(today.getDate() - today.getDay() - 6);
-    var lastSun = new Date(lastMon); lastSun.setDate(lastMon.getDate()+6);
-    return {type:'range', from: lastMon.toISOString().slice(0,10), to: lastSun.toISOString().slice(0,10)};
-  }
-
-  // 今月
-  if (text.match(/今月/)) {
-    var firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    return {type:'range', from: firstDay.toISOString().slice(0,10), to: todayStr};
-  }
-
-  // 先月
-  if (text.match(/先月/)) {
-    var firstDayLast = new Date(today.getFullYear(), today.getMonth()-1, 1);
-    var lastDayLast = new Date(today.getFullYear(), today.getMonth(), 0);
-    return {type:'range', from: firstDayLast.toISOString().slice(0,10), to: lastDayLast.toISOString().slice(0,10)};
-  }
-
-  // X月Y日
-  var mdMatch = text.match(/(\d{1,2})月(\d{1,2})日/);
-  if (mdMatch) {
-    var year = today.getFullYear();
-    var month = String(mdMatch[1]).padStart(2,'0');
-    var day = String(mdMatch[2]).padStart(2,'0');
-    return {type:'single', date: year + '-' + month + '-' + day};
-  }
-
-  // YYYY-MM-DD
-  var fullMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (fullMatch) return {type:'single', date: fullMatch[0]};
-
-  // 過去・最近・これまで → 直近30件
-  if (text.match(/過去|最近|これまで|全部|一覧/)) {
-    return {type:'all'};
-  }
-
-  return null;
-}
-
-function formatNippoForAI(reports) {
-  if (reports.length === 0) return '本日の製造日報データはありません。';
-  var text = '';
-  reports.forEach(function(r) {
-    text += '【製造日：' + r.date + '　担当：' + (r.author || '不明') + '】\n';
-    if (r.semiProduct) text += '半製品：' + r.semiProduct + '\n';
-    ['batch1','batch2','batch3'].forEach(function(b, i) {
-      var batch = r[b];
-      if (batch && batch.name) {
-        text += 'バッチ' + (i+1) + '：' + batch.name + '　数量：' + (batch.qty || '-') + '袋　時間：' + (batch.start || '-') + '〜' + (batch.end || '-') + '\n';
-        if (batch.notes) text += '　メモ：' + batch.notes + '\n';
-      }
-    });
-    if (r.otherNotes) text += '備考：' + r.otherNotes + '\n';
-    text += '\n';
-  });
-  return text;
-}
-
-// スケジュール取得
-// personsマスターを取得してIDと名前のマップを作る
-function fetchPersonsMap() {
-  if (!scheduleDB) return Promise.resolve({});
-  return scheduleDB.ref('persons').once('value').then(function(snapshot) {
-    var map = {};
-    snapshot.forEach(function(child) {
-      var p = child.val();
-      if (p.id && p.name) map[p.id] = p.name;
-    });
-    return map;
-  }).catch(function() { return {}; });
-}
-
-function fetchScheduleData(targetDate, fromDate, toDate, personName) {
-  if (!scheduleDB) return Promise.resolve([]);
-  return Promise.all([
-    scheduleDB.ref('schedules').once('value'),
-    fetchPersonsMap()
-  ]).then(function(results) {
-    var snapshot = results[0];
-    var personsMap = results[1];
-    var schedules = [];
-    snapshot.forEach(function(child) {
-      var s = child.val();
-      // 担当者名を付与
-      s.personName = s.personId ? (personsMap[s.personId] || s.personId) : '';
-      var startDate = s.start ? s.start.slice(0,10) : '';
-      var checkDate = s.mfgDate || s.shipDate || startDate;
-      if (!checkDate) return;
-
-      // 担当者フィルター
-      if (personName && s.personName !== personName) return;
-
-      if (targetDate) {
-        if (s.mfgDate === targetDate || s.shipDate === targetDate || startDate === targetDate) { schedules.push(s); }
-        return;
-      }
-      if (fromDate && toDate) {
-        if ((s.mfgDate && s.mfgDate >= fromDate && s.mfgDate <= toDate) ||
-            (s.shipDate && s.shipDate >= fromDate && s.shipDate <= toDate) ||
-            (startDate && startDate >= fromDate && startDate <= toDate)) {
-          schedules.push(s);
-        }
-        return;
-      }
-      schedules.push(s);
-    });
-    schedules.sort(function(a,b) {
-      var da = a.mfgDate || a.shipDate || (a.start||'').slice(0,10) || '';
-      var db2 = b.mfgDate || b.shipDate || (b.start||'').slice(0,10) || '';
-      return da.localeCompare(db2);
-    });
-    return schedules.slice(0, 30);
-  }).catch(function() { return []; });
-}
-
-function formatScheduleForAI(schedules, searchType) {
-  if (schedules.length === 0) return '該当期間のスケジュールデータはありません。';
-  var text = '';
-  schedules.forEach(function(s) {
-    var typeLabel = s.type === 'personal' ? '【個人予定】' : '【工場予定】';
-    text += typeLabel + (s.title || '未定') + '\n';
-    if (s.personName) text += '  担当者：' + s.personName + '\n';
-    if (s.start) text += '  日時：' + s.start.slice(0,10) + ' ' + s.start.slice(11,16) + '〜' + (s.end ? s.end.slice(11,16) : '') + '\n';
-    if (s.mfgDate) text += '  製造日：' + s.mfgDate + '\n';
-    if (s.shipDate) text += '  出荷日：' + s.shipDate + '\n';
-    if (s.note) text += '  備考：' + s.note + '\n';
-    text += '\n';
-  });
-  return text;
-}
-
-// 出荷日で絞り込む関数
-function fetchScheduleByShipDate(targetDate, fromDate, toDate) {
-  if (!scheduleDB) return Promise.resolve([]);
-  return scheduleDB.ref('schedules').once('value').then(function(snapshot) {
-    var schedules = [];
-    snapshot.forEach(function(child) {
-      var s = child.val();
-      if (!s.shipDate) return;
-      if (targetDate && s.shipDate === targetDate) { schedules.push(s); return; }
-      if (fromDate && toDate && s.shipDate >= fromDate && s.shipDate <= toDate) { schedules.push(s); return; }
-      if (!targetDate && !fromDate) schedules.push(s);
-    });
-    schedules.sort(function(a,b) { return (a.shipDate||'').localeCompare(b.shipDate||''); });
-    return schedules;
-  }).catch(function() { return []; });
-}
-
-// 学習済みQ&Aを読み込む
+/* ================= 状態 ================= */
+var clientsData = [];
 var learnedQA = [];
-function loadLearnedQA() {
-  db.collection("learnedQA").get().then(function(snapshot) {
-    learnedQA = [];
-    snapshot.forEach(function(d) { learnedQA.push(Object.assign({id: d.id}, d.data())); });
-  }).catch(function(e) { console.warn("learnedQA load error:", e); });
-}
+var personsMap = {};   // personId -> 氏名
+var messages = [];
+var isLoading = false;
 
-// 質問と学習済みQ&Aを照合する
-function findLearnedAnswer(question) {
-  if (learnedQA.length === 0) return null;
-  var best = null;
-  var bestScore = 0;
-  learnedQA.forEach(function(qa) {
-    // 簡易一致スコア（共通文字数）
-    var score = 0;
-    var qChars = question.split('');
-    qChars.forEach(function(c) { if (qa.question && qa.question.includes(c)) score++; });
-    var similarity = score / Math.max(question.length, (qa.question||'').length);
-    if (similarity > 0.6 && similarity > bestScore) {
-      bestScore = similarity;
-      best = qa;
-    }
+/* ================= 共通ユーティリティ ================= */
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
-  return best;
+}
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+// 日付は必ず端末のローカル時刻（日本時間）で扱う（toISOStringはUTCになりズレるため使わない）
+function ymd(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+function todayStr() { return ymd(new Date()); }
+function isoToLocalDate(iso) { var d = new Date(iso); return isNaN(d) ? '' : ymd(d); }
+function isoToLocalTime(iso) {
+  var d = new Date(iso);
+  return isNaN(d) ? '' : String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+function toHalfWidth(s) { return s.replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }); }
+
+// 質問文から日付・期間を読み取る
+function parseDateFromText(raw) {
+  var text = toHalfWidth(raw);
+  var now = new Date();
+  var today = todayStr();
+  var dow = (now.getDay() + 6) % 7; // 月曜=0
+  var m;
+  if (/今日|本日/.test(text)) return {type: 'single', date: today, label: '今日'};
+  if (/昨日/.test(text)) return {type: 'single', date: ymd(addDays(now, -1)), label: '昨日'};
+  if (/明日/.test(text)) return {type: 'single', date: ymd(addDays(now, 1)), label: '明日'};
+  if (/今週/.test(text)) return {type: 'range', from: ymd(addDays(now, -dow)), to: ymd(addDays(now, 6 - dow)), label: '今週'};
+  if (/先週/.test(text)) return {type: 'range', from: ymd(addDays(now, -dow - 7)), to: ymd(addDays(now, -dow - 1)), label: '先週'};
+  if (/来週/.test(text)) return {type: 'range', from: ymd(addDays(now, 7 - dow)), to: ymd(addDays(now, 13 - dow)), label: '来週'};
+  if (/今月/.test(text)) return monthRange(now.getFullYear(), now.getMonth(), '今月');
+  if (/先月/.test(text)) return monthRange(now.getFullYear(), now.getMonth() - 1, '先月');
+  if (/来月/.test(text)) return monthRange(now.getFullYear(), now.getMonth() + 1, '来月');
+  if ((m = text.match(/(\d{4})[-\/年](\d{1,2})[-\/月](\d{1,2})/))) return single(+m[1], +m[2], +m[3]);
+  if ((m = text.match(/(\d{1,2})月(\d{1,2})日/)) || (m = text.match(/(?:^|[^\d])(\d{1,2})\/(\d{1,2})(?:[^\d]|$)/))) return single(now.getFullYear(), +m[1], +m[2]);
+  if ((m = text.match(/(\d{1,2})月/))) return monthRange(now.getFullYear(), +m[1] - 1, m[1] + '月');
+  if (/過去|最近|これまで|全部|一覧|履歴/.test(text)) return {type: 'all', label: '直近'};
+  return null;
+  function single(y, mo, d) { var s = y + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0'); return {type: 'single', date: s, label: s}; }
+  function monthRange(y, mIdx, label) { return {type: 'range', from: ymd(new Date(y, mIdx, 1)), to: ymd(new Date(y, mIdx + 1, 0)), label: label}; }
+}
+function inRange(date, info) {
+  if (!date) return false;
+  if (!info || info.type === 'all') return true;
+  if (info.type === 'single') return date === info.date;
+  return date >= info.from && date <= info.to;
 }
 
-// 取引先管理
-function loadClients() {
-  db.collection("clients").get().then(function(snapshot) {
-    clientsData = [];
-    snapshot.forEach(function(d) { clientsData.push(Object.assign({id: d.id}, d.data())); });
-    renderClientList();
-  }).catch(function(e) { console.error(e); });
+/* ================= 製造日報 ================= */
+function batchesOf(r) {
+  return ['batch1', 'batch2', 'batch3'].map(function (k) { return r[k]; }).filter(function (b) { return b && b.name; });
+}
+function fetchNippo(dateInfo, productName) {
+  if (!nippoDB) return Promise.resolve([]);
+  return nippoDB.collection('nippo').get().then(function (snap) {
+    var list = [];
+    snap.forEach(function (doc) {
+      var r = doc.data();
+      if (!r.date) return;
+      if (productName) {
+        var hit = batchesOf(r).some(function (b) { return b.name.indexOf(productName) >= 0; }) ||
+                  (r.semiProduct && r.semiProduct.indexOf(productName) >= 0);
+        if (!hit) return;
+      }
+      if (dateInfo && !inRange(r.date, dateInfo)) return;
+      list.push(r);
+    });
+    list.sort(function (a, b) { return b.date.localeCompare(a.date); });
+    return list.slice(0, productName ? 40 : 20);
+  }).catch(function (e) { console.warn('日報取得エラー', e); return null; });
+}
+function formatNippo(list, productName) {
+  var out = '';
+  list.forEach(function (r) {
+    if (productName) {
+      var names = batchesOf(r).filter(function (b) { return b.name.indexOf(productName) >= 0; })
+        .map(function (b) { return b.name + '（' + (b.qty || '-') + '袋）'; });
+      if (r.semiProduct && r.semiProduct.indexOf(productName) >= 0) names.push('半製品：' + r.semiProduct);
+      out += r.date + '　担当：' + (r.author || '不明') + '　' + names.join('、') + '\n';
+      return;
+    }
+    out += '■' + r.date + '　担当：' + (r.author || '不明') + '\n';
+    if (r.semiProduct) out += '  半製品：' + r.semiProduct + '\n';
+    batchesOf(r).forEach(function (b, i) {
+      out += '  バッチ' + (i + 1) + '：' + b.name + '　数量：' + (b.qty || '-') + '袋　時間：' + (b.start || '-') + '〜' + (b.end || '-') + '\n';
+      if (b.notes) out += '    メモ：' + b.notes + '\n';
+    });
+    if (r.otherNotes) out += '  備考：' + r.otherNotes + '\n';
+  });
+  return out;
 }
 
-function renderClientList() {
-  var list = document.getElementById('clientList');
-  if (clientsData.length === 0) { list.innerHTML = '<p class="empty-msg">取引先を追加してください</p>'; return; }
-  list.innerHTML = clientsData.map(function(c) {
-    return '<div class="client-card">' +
-      '<div class="client-card-header"><span class="client-name">🏢 ' + c.name + '</span>' +
-      '<div class="client-actions">' +
-      '<button class="edit-btn" onclick="editClient(\'' + c.id + '\')">編集</button>' +
-      '<button class="del-btn" onclick="deleteClient(\'' + c.id + '\')">削除</button>' +
-      '</div></div>' +
-      (c.contact ? '<div class="client-label">👤 担当者</div><div class="client-memo">' + c.contact + '</div>' : '') +
-      (c.phone ? '<div class="client-label" style="margin-top:6px">📞 電話番号</div><div class="client-memo">' + c.phone + '</div>' : '') +
-      (c.memo ? '<div class="client-label" style="margin-top:8px">📝 対応メモ・注意事項</div><div class="client-memo">' + c.memo + '</div>' : '') +
-      '</div>';
+/* ================= スケジュール ================= */
+function loadPersons() {
+  if (!scheduleDB) return Promise.resolve();
+  return scheduleDB.ref('persons').once('value').then(function (snap) {
+    var map = {};
+    snap.forEach(function (c) { var p = c.val(); if (p && p.id && p.name) map[p.id] = p.name; });
+    personsMap = map;
+  }).catch(function (e) { console.warn('スタッフ取得エラー', e); });
+}
+// 質問に含まれるスタッフ名を探す（フルネーム・姓・名のどれでも可）
+function detectPerson(text) {
+  var found = null;
+  Object.keys(personsMap).forEach(function (id) {
+    var full = personsMap[id].replace(/\s/g, '');
+    var keys = [full];
+    if (full.length >= 4) { keys.push(full.slice(0, 2), full.slice(-2)); }
+    if (keys.some(function (k) { return k.length >= 2 && text.indexOf(k) >= 0; })) found = personsMap[id];
+  });
+  return found;
+}
+function fetchSchedules(dateInfo, opts) {
+  if (!scheduleDB) return Promise.resolve([]);
+  opts = opts || {};
+  return scheduleDB.ref('schedules').once('value').then(function (snap) {
+    var list = [];
+    snap.forEach(function (c) {
+      var s = c.val();
+      if (!s) return;
+      s.personName = s.personId ? (personsMap[s.personId] || '') : '';
+      s.startDate = s.start ? isoToLocalDate(s.start) : '';
+      if (opts.personName && s.personName !== opts.personName) return;
+      if (opts.shipOnly) {
+        if (!s.shipDate || !inRange(s.shipDate, dateInfo)) return;
+      } else if (!(inRange(s.startDate, dateInfo) || inRange(s.mfgDate, dateInfo) || inRange(s.shipDate, dateInfo))) {
+        return;
+      }
+      list.push(s);
+    });
+    list.sort(function (a, b) {
+      var ka = opts.shipOnly ? a.shipDate : (a.startDate || a.mfgDate || a.shipDate || '');
+      var kb = opts.shipOnly ? b.shipDate : (b.startDate || b.mfgDate || b.shipDate || '');
+      return ka.localeCompare(kb);
+    });
+    return list.slice(0, 40);
+  }).catch(function (e) { console.warn('スケジュール取得エラー', e); return null; });
+}
+function formatSchedules(list) {
+  var out = '';
+  list.forEach(function (s) {
+    out += (s.type === 'personal' ? '【個人予定】' : '【工場予定】') + (s.title || '（無題）') + '\n';
+    if (s.personName) out += '  担当者：' + s.personName + '\n';
+    if (s.start) out += '  日時：' + s.startDate + ' ' + isoToLocalTime(s.start) + (s.end ? '〜' + isoToLocalTime(s.end) : '') + '\n';
+    if (s.mfgDate) out += '  製造日：' + s.mfgDate + '\n';
+    if (s.shipDate) out += '  出荷日：' + s.shipDate + '\n';
+    if (s.note) out += '  備考：' + s.note + '\n';
+  });
+  return out;
+}
+
+/* ================= 学習した回答 ================= */
+function loadLearnedQA() {
+  if (!db) { $('learnedList').innerHTML = '<p class="empty-msg">データベースに接続できません</p>'; return Promise.resolve(); }
+  return db.collection('learnedQA').get().then(function (snap) {
+    learnedQA = [];
+    snap.forEach(function (d) { learnedQA.push(Object.assign({id: d.id}, d.data())); });
+    learnedQA.sort(function (a, b) { return tsOf(b.createdAt) - tsOf(a.createdAt); });
+    renderLearned();
+  }).catch(function (e) {
+    console.warn('学習データ取得エラー', e);
+    $('learnedList').innerHTML = '<p class="empty-msg">読み込めませんでした：' + esc(e.message) + '</p>';
+  });
+}
+function tsOf(v) { if (!v) return 0; if (v.toMillis) return v.toMillis(); var d = new Date(v); return isNaN(d) ? 0 : d.getTime(); }
+// 2文字単位の一致率で似た質問を探す
+function bigrams(s) { s = s.replace(/[\s、。？?！!「」]/g, ''); var r = {}; for (var i = 0; i < s.length - 1; i++) r[s.substr(i, 2)] = 1; return r; }
+function similarity(a, b) {
+  var A = bigrams(a), B = bigrams(b), inter = 0, na = 0, nb = 0, k;
+  for (k in A) { na++; if (B[k]) inter++; }
+  for (k in B) nb++;
+  return na && nb ? (2 * inter) / (na + nb) : 0;
+}
+function relevantLearned(question) {
+  return learnedQA.map(function (qa) { return {qa: qa, score: similarity(question, qa.question || '')}; })
+    .filter(function (x) { return x.score >= 0.3; })
+    .sort(function (a, b) { return b.score - a.score; })
+    .slice(0, 5).map(function (x) { return x.qa; });
+}
+function renderLearned() {
+  var el = $('learnedList');
+  if (!learnedQA.length) { el.innerHTML = '<p class="empty-msg">まだ学習した回答はありません</p>'; return; }
+  el.innerHTML = learnedQA.map(function (qa) {
+    return '<div class="item"><div class="item-head"><div class="item-title">Q. ' + esc(qa.question) + '</div>' +
+      '<div class="item-actions"><button class="sm-btn danger" data-del-learned="' + esc(qa.id) + '">削除</button></div></div>' +
+      '<dl class="kv"><dt>正しい回答</dt><dd>' + esc(qa.answer) + '</dd></dl></div>';
   }).join('');
 }
 
+/* ================= 取引先管理 ================= */
+var FIELDS = [
+  {key: 'name', label: '取引先名', aliases: ['取引先名', '会社名', '取引先']},
+  {key: 'formal', label: '正式名称', aliases: ['正式名称']},
+  {key: 'shipName', label: '発送先名', aliases: ['発送先名', '発送先']},
+  {key: 'zip', label: '郵便番号', aliases: ['郵便番号', '〒']},
+  {key: 'address', label: '住所', aliases: ['住所']},
+  {key: 'contact', label: '担当者', aliases: ['担当者', '担当者名']},
+  {key: 'phone', label: '電話番号', aliases: ['電話番号', '電話', 'TEL']},
+  {key: 'product', label: '商品', aliases: ['商品', '商品名']},
+  {key: 'memo', label: '発送方法・注意事項', aliases: ['発送方法・注意事項', '発送方法', '注意事項', '対応メモ・注意事項', '対応メモ']}
+];
+function loadClients() {
+  if (!db) { $('clientList').innerHTML = '<p class="empty-msg">データベースに接続できません。通信状況を確認して再読み込みしてください。</p>'; return Promise.resolve(); }
+  return db.collection('clients').get().then(function (snap) {
+    clientsData = [];
+    snap.forEach(function (d) { clientsData.push(Object.assign({id: d.id}, d.data())); });
+    clientsData.sort(function (a, b) { return (a.name || '').localeCompare(b.name || '', 'ja'); });
+    renderClients();
+  }).catch(function (e) {
+    console.error(e);
+    $('clientList').innerHTML = '<p class="empty-msg">読み込めませんでした：' + esc(e.message) + '</p>';
+  });
+}
+function renderClients() {
+  var q = ($('clientSearch').value || '').trim();
+  var list = clientsData.filter(function (c) {
+    if (!q) return true;
+    return FIELDS.some(function (f) { return (c[f.key] || '').indexOf(q) >= 0; });
+  });
+  $('clientCount').textContent = clientsData.length ? (q ? list.length + ' / ' : '') + clientsData.length + '件' : '';
+  if (!list.length) { $('clientList').innerHTML = '<p class="empty-msg">' + (clientsData.length ? '該当する取引先がありません' : '取引先を追加してください') + '</p>'; return; }
+  $('clientList').innerHTML = list.map(function (c) {
+    var rows = '';
+    FIELDS.slice(1).forEach(function (f) {
+      var v = c[f.key];
+      if (f.key === 'zip' || !v && f.key !== 'address') return;
+      if (f.key === 'address') { v = ((c.zip ? '〒' + c.zip + ' ' : '') + (c.address || '')).trim(); if (!v) return; }
+      rows += '<dt>' + esc(f.label) + '</dt><dd>' + esc(v) + '</dd>';
+    });
+    return '<div class="item"><div class="item-head"><div class="item-title">🏢 ' + esc(c.name) + '</div>' +
+      '<div class="item-actions"><button class="sm-btn" data-edit="' + esc(c.id) + '">編集</button>' +
+      '<button class="sm-btn danger" data-del="' + esc(c.id) + '">削除</button></div></div>' +
+      (rows ? '<dl class="kv">' + rows + '</dl>' : '') + '</div>';
+  }).join('');
+}
+function clearForm() {
+  FIELDS.forEach(function (f) { $('f_' + f.key).value = ''; });
+  $('editId').value = '';
+  $('formTitle').textContent = '➕ 取引先を追加';
+  $('cancelEditBtn').style.display = 'none';
+}
 function saveClient() {
-  var name = document.getElementById('clientName').value.trim();
-  var memo = document.getElementById('clientMemo').value.trim();
-  var contact = document.getElementById('clientContact').value.trim();
-  var phone = document.getElementById('clientPhone').value.trim();
-  var editId = document.getElementById('editId').value;
-  if (!name) { alert('会社名を入力してください'); return; }
-  var data = {name: name, memo: memo, contact: contact, phone: phone};
-  var p = editId ? db.collection("clients").doc(editId).update(data) : db.collection("clients").add(Object.assign(data, {createdAt: new Date()}));
-  p.then(function() {
-    document.getElementById('clientName').value = '';
-    document.getElementById('clientMemo').value = '';
-    document.getElementById('clientContact').value = '';
-    document.getElementById('clientPhone').value = '';
-    document.getElementById('editId').value = '';
-    document.getElementById('formTitle').textContent = '➕ 取引先を追加';
-    loadClients();
-loadLearnedQA();
-  }).catch(function(e) { alert('保存に失敗しました: ' + e.message); });
+  var data = {};
+  FIELDS.forEach(function (f) { data[f.key] = $('f_' + f.key).value.trim(); });
+  if (!data.name) { alert('取引先名を入力してください'); return; }
+  if (!db) { alert('データベースに接続できません'); return; }
+  var id = $('editId').value;
+  data.updatedAt = new Date();
+  var p = id ? db.collection('clients').doc(id).set(data, {merge: true})
+             : db.collection('clients').add(Object.assign(data, {createdAt: new Date()}));
+  p.then(function () { clearForm(); return loadClients(); })
+   .catch(function (e) { alert('保存に失敗しました：' + e.message); });
 }
-
 function editClient(id) {
-  var c = clientsData.find(function(x) { return x.id === id; });
+  var c = clientsData.find(function (x) { return x.id === id; });
   if (!c) return;
-  document.getElementById('clientName').value = c.name || '';
-  document.getElementById('clientFormal').value = c.formal || '';
-  document.getElementById('clientShipName').value = c.shipName || '';
-  document.getElementById('clientZip').value = c.zip || '';
-  document.getElementById('clientAddress').value = c.address || '';
-  document.getElementById('clientContact').value = c.contact || '';
-  document.getElementById('clientPhone').value = c.phone || '';
-  document.getElementById('clientProduct').value = c.product || '';
-  document.getElementById('clientMemo').value = c.memo || '';
-  document.getElementById('editId').value = id;
-  document.getElementById('formTitle').textContent = '✏️ 取引先を編集';
-  window.scrollTo(0, 0);
+  FIELDS.forEach(function (f) { $('f_' + f.key).value = c[f.key] || ''; });
+  $('editId').value = id;
+  $('formTitle').textContent = '✏️ 取引先を編集';
+  $('cancelEditBtn').style.display = '';
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
-
 function deleteClient(id) {
-  if (!confirm('この取引先を削除しますか？')) return;
-  db.collection("clients").doc(id).delete().then(function() { loadClients(); }).catch(function() { alert('削除に失敗しました'); });
+  var c = clientsData.find(function (x) { return x.id === id; });
+  if (!confirm('「' + (c ? c.name : '') + '」を削除しますか？')) return;
+  db.collection('clients').doc(id).delete().then(loadClients).catch(function (e) { alert('削除に失敗しました：' + e.message); });
+}
+function deleteAllClients() {
+  if (!clientsData.length) { alert('削除するデータがありません'); return; }
+  if (!confirm('取引先 ' + clientsData.length + ' 件をすべて削除します。よろしいですか？')) return;
+  if (!confirm('元に戻せません。本当に全件削除しますか？')) return;
+  setStatus('csvStatus', '削除中…');
+  var ids = clientsData.map(function (c) { return c.id; });
+  var chunks = [];
+  for (var i = 0; i < ids.length; i += 400) chunks.push(ids.slice(i, i + 400));
+  chunks.reduce(function (p, chunk) {
+    return p.then(function () {
+      var b = db.batch();
+      chunk.forEach(function (id) { b.delete(db.collection('clients').doc(id)); });
+      return b.commit();
+    });
+  }, Promise.resolve()).then(function () {
+    setStatus('csvStatus', ids.length + '件を削除しました', true);
+    return loadClients();
+  }).catch(function (e) { setStatus('csvStatus', '削除に失敗しました：' + e.message, false); });
 }
 
+// CSV（ダブルクォート内の改行・カンマ・BOM・CRLFに対応）
+function parseCSV(text) {
+  text = text.replace(/^﻿/, '');
+  var rows = [], row = [], cur = '', q = false;
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+      else cur += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cur); cur = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cur); cur = '';
+      if (row.some(function (v) { return v.trim() !== ''; })) rows.push(row);
+      row = [];
+    } else cur += ch;
+  }
+  row.push(cur);
+  if (row.some(function (v) { return v.trim() !== ''; })) rows.push(row);
+  return rows;
+}
+function csvCell(v) { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
 function exportCSV() {
-  if (clientsData.length === 0) { alert('エクスポートするデータがありません'); return; }
-  var header = ['会社名','担当者名','電話番号','対応メモ・注意事項'];
-  var rows = clientsData.map(function(c) {
-    return [c.name||'', c.contact||'', c.phone||'', c.memo||''].map(function(v) { return '"' + v.replace(/"/g,'""').replace(/\n/g,' ') + '"'; });
-  });
-  var csv = [header].concat(rows).map(function(r) { return r.join(','); }).join('\n');
-  var blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
-  var url = URL.createObjectURL(blob);
+  if (!clientsData.length) { alert('エクスポートするデータがありません'); return; }
+  var lines = [FIELDS.map(function (f) { return f.label; }).join(',')];
+  clientsData.forEach(function (c) { lines.push(FIELDS.map(function (f) { return csvCell(c[f.key]); }).join(',')); });
+  var blob = new Blob(['﻿' + lines.join('\r\n')], {type: 'text/csv;charset=utf-8;'});
   var a = document.createElement('a');
-  a.href = url; a.download = '取引先リスト.csv'; a.click();
-  URL.revokeObjectURL(url);
+  a.href = URL.createObjectURL(blob);
+  a.download = '取引先リスト_' + todayStr() + '.csv';
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+}
+function importCSV(ev) {
+  var file = ev.target.files[0];
+  if (!file) return;
+  if (!db) { setStatus('csvStatus', 'データベースに接続できません', false); ev.target.value = ''; return; }
+  file.text().then(function (text) {
+    var rows = parseCSV(text);
+    if (rows.length < 2) throw new Error('データが見つかりませんでした');
+    // 見出し行から列の位置を決める（見出しが無い・不明な列は9列の標準順とみなす）
+    var header = rows[0].map(function (h) { return h.trim(); });
+    var colIndex = {};
+    FIELDS.forEach(function (f) {
+      var idx = header.findIndex(function (h) { return f.aliases.indexOf(h) >= 0; });
+      if (idx >= 0) colIndex[f.key] = idx;
+    });
+    var hasHeader = colIndex.name !== undefined;
+    if (!hasHeader) FIELDS.forEach(function (f, i) { colIndex[f.key] = i; });
+    var body = hasHeader ? rows.slice(1) : rows;
+    var byName = {};
+    clientsData.forEach(function (c) { if (c.name) byName[c.name.trim()] = c.id; });
+    var added = 0, updated = 0, ops = [];
+    body.forEach(function (r) {
+      var data = {};
+      FIELDS.forEach(function (f) { var i = colIndex[f.key]; data[f.key] = i === undefined ? '' : (r[i] || '').trim(); });
+      if (!data.name) return;
+      data.updatedAt = new Date();
+      var id = byName[data.name];
+      if (id) { ops.push({ref: db.collection('clients').doc(id), data: data}); updated++; }
+      else { data.createdAt = new Date(); var ref = db.collection('clients').doc(); byName[data.name] = ref.id; ops.push({ref: ref, data: data}); added++; }
+    });
+    setStatus('csvStatus', '取り込み中…');
+    var chunks = [];
+    for (var i = 0; i < ops.length; i += 400) chunks.push(ops.slice(i, i + 400));
+    return chunks.reduce(function (p, chunk) {
+      return p.then(function () {
+        var b = db.batch();
+        chunk.forEach(function (o) { b.set(o.ref, o.data); });
+        return b.commit();
+      });
+    }, Promise.resolve()).then(function () {
+      setStatus('csvStatus', '取り込み完了：新規 ' + added + '件 ／ 上書き ' + updated + '件', true);
+      return loadClients();
+    });
+  }).catch(function (e) {
+    setStatus('csvStatus', '取り込みに失敗しました：' + e.message, false);
+  }).then(function () { ev.target.value = ''; });
+}
+function setStatus(id, msg, ok) {
+  var el = $(id); el.textContent = msg;
+  el.className = 'status-line' + (ok === true ? ' ok' : ok === false ? ' ng' : '');
 }
 
-function importCSV(event) {
-  var file = event.target.files[0];
-  if (!file) return;
-  file.text().then(function(text) {
-    var lines = text.split('\n').filter(function(l) { return l.trim(); });
-    if (lines.length < 2) { alert('データが見つかりませんでした'); return; }
-    var count = 0;
-    var promises = lines.slice(1).map(function(line) {
-      var cols = [], cur = '', inQuote = false;
-      for (var i = 0; i < line.length; i++) {
-        if (line[i] === '"') { if (inQuote && line[i+1] === '"') { cur += '"'; i++; } else { inQuote = !inQuote; } }
-        else if (line[i] === ',' && !inQuote) { cols.push(cur); cur = ''; }
-        else { cur += line[i]; }
-      }
-      cols.push(cur);
-      var name = (cols[0]||'').trim();
-      var formal = (cols[1]||'').trim();
-      var shipName = (cols[2]||'').trim();
-      var zip = (cols[3]||'').trim();
-      var address = (cols[4]||'').trim();
-      var contact = (cols[5]||'').trim();
-      var phone = (cols[6]||'').trim();
-      var product = (cols[7]||'').trim();
-      var memo = (cols[8]||'').trim();
-      if (!name) return Promise.resolve();
-      count++;
-      return db.collection("clients").add({name:name,formal:formal,shipName:shipName,zip:zip,address:address,contact:contact,phone:phone,product:product,memo:memo,createdAt:new Date()});
+/* ================= Gemini（モデル自動切替） ================= */
+function getApiKey() { return (lsGet('gemini_api_key') || '').trim(); }
+function cachedModelList() { try { return JSON.parse(lsGet('gemini_models') || '[]'); } catch (e) { return []; } }
+function modelCandidates() {
+  var list = [];
+  [lsGet('gemini_model')].concat(DEFAULT_MODELS, cachedModelList()).forEach(function (m) {
+    if (m && list.indexOf(m) < 0 && (lsGet('gemini_dead_' + m) !== todayStr())) list.push(m);
+  });
+  return list;
+}
+// Googleから今使えるモデル一覧を取得（flash系・テキスト生成のみ）
+function fetchModelList(key) {
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {headers: {'x-goog-api-key': key}})
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.error) throw new Error(d.error.message);
+      var names = (d.models || []).filter(function (m) {
+        return (m.supportedGenerationMethods || []).indexOf('generateContent') >= 0 &&
+          /flash/.test(m.name) && !/image|tts|audio|live|embedding|thinking|exp|8b/.test(m.name);
+      }).map(function (m) { return m.name.replace(/^models\//, ''); });
+      names.sort(function (a, b) {
+        var va = parseFloat((a.match(/gemini-(\d+(\.\d+)?)/) || [0, 0])[1]);
+        var vb = parseFloat((b.match(/gemini-(\d+(\.\d+)?)/) || [0, 0])[1]);
+        if (vb !== va) return vb - va;
+        return (/preview/.test(a) ? 1 : 0) - (/preview/.test(b) ? 1 : 0);
+      });
+      lsSet('gemini_models', JSON.stringify(names));
+      return names;
     });
-    Promise.all(promises).then(function() {
-      alert(count + '件のデータをインポートしました');
-      event.target.value = '';
-      loadClients();
-    });
+}
+// エラー種別：key（キー不正）/ skip（このモデルは不可→次へ）/ fatal
+function classifyError(status, err) {
+  var msg = (err && err.message) || '';
+  if (status === 400 && /API key|API_KEY/i.test(msg)) return 'key';
+  if (status === 401 || status === 403) return 'key';
+  if (status === 404 || /no longer available|not found|not supported|deprecated/i.test(msg)) return 'dead';
+  if (status === 429 || status >= 500 || /demand|overloaded|quota|exhausted|unavailable/i.test(msg)) return 'skip';
+  return 'fatal';
+}
+function callGeminiOnce(model, key, body) {
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'x-goog-api-key': key},
+    body: JSON.stringify(body)
+  }).then(function (r) { return r.json().then(function (d) { return {status: r.status, data: d}; }); });
+}
+function callGemini(body, key) {
+  var tried = [], refreshed = false, lastErr = null;
+  function tryList(list) {
+    var i = 0;
+    function next() {
+      while (i < list.length && tried.indexOf(list[i]) >= 0) i++;
+      if (i >= list.length) return Promise.resolve(null);
+      var model = list[i++];
+      tried.push(model);
+      return callGeminiOnce(model, key, body).then(function (res) {
+        if (res.data.error) {
+          var kind = classifyError(res.status, res.data.error);
+          lastErr = res.data.error.message;
+          if (kind === 'key') throw new Error('APIキーが正しくないか、使えない状態です。管理→設定でAPIキーを確認してください。（' + lastErr + '）');
+          if (kind === 'fatal') throw new Error(lastErr);
+          if (kind === 'dead') lsSet('gemini_dead_' + model, todayStr());
+          if (lsGet('gemini_model') === model) lsDel('gemini_model');
+          return next();
+        }
+        var cand = (res.data.candidates || [])[0];
+        var text = cand && cand.content && (cand.content.parts || []).map(function (p) { return p.text || ''; }).join('');
+        if (!text) {
+          if (cand && cand.finishReason === 'SAFETY') throw new Error('この内容には回答できませんでした。言い方を変えてもう一度お試しください。');
+          lastErr = '空の回答'; return next();
+        }
+        lsSet('gemini_model', model);
+        updateModelInfo();
+        return {text: text, model: model};
+      });
+    }
+    return next();
+  }
+  return tryList(modelCandidates()).then(function (r) {
+    if (r) return r;
+    if (refreshed) return null;
+    refreshed = true;
+    return fetchModelList(key).then(tryList).catch(function () { return null; });
+  }).then(function (r) {
+    if (r) return r;
+    throw new Error('現在使えるAIモデルが見つかりませんでした。混み合っている可能性があります。少し時間をおいて再度お試しください。' + (lastErr ? '（' + lastErr + '）' : ''));
   });
 }
 
-// PIN管理
-function openAdmin() {
-  if (document.getElementById('tabBar').classList.contains('visible')) {
-    document.getElementById('tabBar').classList.remove('visible');
-    switchTab('chat');
-  } else {
-    document.getElementById('pinOverlay').classList.add('visible');
-    document.getElementById('pinInput').value = '';
-    document.getElementById('pinError').textContent = '';
-    setTimeout(function() { document.getElementById('pinInput').focus(); }, 100);
-  }
-}
-
-function checkPin() {
-  if (document.getElementById('pinInput').value === ADMIN_PIN) {
-    document.getElementById('pinOverlay').classList.remove('visible');
-    document.getElementById('tabBar').classList.add('visible');
-    switchTab('admin');
-    loadClients();
-  } else {
-    document.getElementById('pinError').textContent = 'PINコードが違います';
-  }
-}
-
-function switchTab(tab) {
-  document.getElementById('tabChatEl').classList.toggle('active', tab === 'chat');
-  document.getElementById('tabAdminEl').classList.toggle('active', tab === 'admin');
-  document.getElementById('chatScreen').style.display = tab === 'chat' ? 'flex' : 'none';
-  var adminEl = document.getElementById('adminScreen');
-  if (tab === 'admin') { adminEl.style.display = 'flex'; adminEl.classList.add('visible'); }
-  else { adminEl.style.display = 'none'; adminEl.classList.remove('visible'); }
-}
-
-// チャット
-function addMessage(role, text, question) {
+/* ================= チャット ================= */
+function scrollChat() { var a = $('chatArea'); a.scrollTop = a.scrollHeight; }
+function addMessage(role, text, question, isError) {
   var div = document.createElement('div');
-  div.className = 'message ' + role;
+  div.className = 'message ' + role + (isError ? ' error' : '');
   var av = document.createElement('div');
   av.className = 'msg-avatar';
-  if (role === 'bot') {
-    var img = document.createElement('img');
-    img.src = 'icon.png';
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
-    av.appendChild(img);
-  } else { av.textContent = '👤'; }
+  if (role === 'bot') { var img = document.createElement('img'); img.src = 'icon.png'; img.alt = ''; av.appendChild(img); }
+  else av.textContent = '👤';
   var bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.textContent = text;
   div.appendChild(av); div.appendChild(bubble);
-  document.getElementById('chatArea').appendChild(div);
-
-  // ボットの回答にフィードバックボタンを追加
-  if (role === 'bot' && question) {
-    var fbBar = document.createElement('div');
-    fbBar.className = 'feedback-bar';
-    fbBar.innerHTML = '<button class="fb-btn fb-good">👍 正しい</button><button class="fb-btn fb-bad">👎 修正が必要</button>';
-    document.getElementById('chatArea').appendChild(fbBar);
-
-    var feedbackForm = document.createElement('div');
-    feedbackForm.className = 'feedback-form';
-    feedbackForm.style.display = 'none';
-    feedbackForm.innerHTML = '<p>正しい回答を入力してください：</p><textarea placeholder="正しい回答を入力…"></textarea><br><button class="fb-save">💾 保存して学習させる</button>';
-    document.getElementById('chatArea').appendChild(feedbackForm);
-
-    fbBar.children[0].addEventListener('click', function() {
-      fbBar.innerHTML = '<span style="font-size:12px;color:#2E7D32">✅ ありがとうございます！</span>';
-      feedbackForm.style.display = 'none';
-    });
-
-    fbBar.children[1].addEventListener('click', function() {
-      feedbackForm.style.display = feedbackForm.style.display === 'none' ? 'block' : 'none';
-    });
-
-    feedbackForm.querySelector('.fb-save').addEventListener('click', function() {
-      var correctAnswer = feedbackForm.querySelector('textarea').value.trim();
-      if (!correctAnswer) { alert('回答を入力してください'); return; }
-      db.collection("learnedQA").add({
-        question: question,
-        answer: correctAnswer,
-        originalAnswer: text,
-        createdAt: new Date()
-      }).then(function() {
-        feedbackForm.innerHTML = '<p style="color:#2E7D32">✅ 学習しました！次回から改善された回答をします。</p>';
-        learnedQA.push({question: question, answer: correctAnswer});
-        fbBar.innerHTML = '<span style="font-size:12px;color:#2E7D32">✅ 学習完了！</span>';
-      }).catch(function(e) { alert('保存に失敗しました: ' + e.message); });
-    });
-  }
-
-  document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+  $('chatArea').appendChild(div);
+  if (role === 'bot' && question && !isError) addFeedback(question, text);
+  scrollChat();
 }
-
+function addFeedback(question, answer) {
+  var bar = document.createElement('div');
+  bar.className = 'feedback-bar';
+  bar.innerHTML = '<button class="fb-btn fb-good">👍 正しい</button><button class="fb-btn fb-bad">👎 修正が必要</button>';
+  var form = document.createElement('div');
+  form.className = 'feedback-form';
+  form.style.display = 'none';
+  form.innerHTML = '<p>正しい回答を入力してください。次から似た質問にはこの内容で答えます。</p><textarea placeholder="正しい回答を入力…"></textarea><div class="btn-row" style="margin-top:8px"><button class="btn primary">💾 保存して学習させる</button></div>';
+  $('chatArea').appendChild(bar);
+  $('chatArea').appendChild(form);
+  bar.children[0].onclick = function () { bar.innerHTML = '<span style="font-size:12px;color:#2E7D32">✅ ありがとうございます！</span>'; form.style.display = 'none'; };
+  bar.children[1].onclick = function () { form.style.display = form.style.display === 'none' ? 'block' : 'none'; scrollChat(); };
+  form.querySelector('button').onclick = function () {
+    var correct = form.querySelector('textarea').value.trim();
+    if (!correct) { alert('回答を入力してください'); return; }
+    if (!db) { alert('データベースに接続できません'); return; }
+    db.collection('learnedQA').add({question: question, answer: correct, originalAnswer: answer, createdAt: new Date()})
+      .then(function () {
+        form.innerHTML = '<p style="color:#2E7D32">✅ 学習しました。次回から修正した内容で回答します。</p>';
+        bar.innerHTML = '<span style="font-size:12px;color:#2E7D32">✅ 学習完了</span>';
+        return loadLearnedQA();
+      }).catch(function (e) { alert('保存に失敗しました：' + e.message); });
+  };
+}
 function showTyping() {
   var div = document.createElement('div');
   div.className = 'typing'; div.id = 'typingIndicator';
-  var av = document.createElement('div');
-  av.className = 'msg-avatar';
-  av.style.cssText = 'background:linear-gradient(135deg,#FF8FAB,#FF6B9D);overflow:hidden';
-  var img = document.createElement('img');
-  img.src = 'icon.png';
-  img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
-  av.appendChild(img);
-  var dots = document.createElement('div');
-  dots.className = 'typing-dots';
-  dots.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-  div.appendChild(av); div.appendChild(dots);
-  document.getElementById('chatArea').appendChild(div);
-  document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+  div.innerHTML = '<div class="msg-avatar" style="background:linear-gradient(135deg,#FF8FAB,#FF6B9D)"><img src="icon.png" alt=""></div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  $('chatArea').appendChild(div);
+  scrollChat();
 }
+function removeTyping() { var el = $('typingIndicator'); if (el) el.remove(); }
+function setBusy(b) { isLoading = b; $('sendBtn').disabled = b; if (!b) $('inputBox').focus(); }
 
-function removeTyping() {
-  var el = document.getElementById('typingIndicator');
-  if (el) el.remove();
+// 質問内容に合わせて、日報・スケジュール・取引先・学習データを集める
+function buildContext(text) {
+  var dateInfo = parseDateFromText(text);
+  var prodMatch = text.match(/^(?:日報で)?(.+?)(?:は|を|の)(?:いつ|最後|前回|製造日|製造履歴|製造した日)/);
+  var productName = prodMatch ? prodMatch[1].replace(/[「」『』\s]/g, '') : null;
+  var wantsNippo = !!productName || /日報|製造|作った|作りました|バッチ|何袋|生産|作業/.test(text);
+  var wantsSchedule = /スケジュール|予定|出荷|発送|納期|計画|引取|引き取り|休み/.test(text);
+  if (dateInfo && !wantsNippo && !wantsSchedule) { wantsNippo = true; wantsSchedule = true; }
+  var shipOnly = /出荷|発送|納期/.test(text) && !/製造/.test(text);
+  var personName = detectPerson(text);
+
+  var nippoInfo = dateInfo || (productName ? null : {type: 'all', label: '直近'});
+  var schedInfo = dateInfo || {type: 'range', from: todayStr(), to: ymd(addDays(new Date(), shipOnly ? 60 : 30)), label: shipOnly ? '今後2ヶ月' : '今後1ヶ月'};
+
+  return Promise.all([
+    wantsNippo ? fetchNippo(nippoInfo, productName) : Promise.resolve(undefined),
+    wantsSchedule ? fetchSchedules(schedInfo, {shipOnly: shipOnly, personName: personName}) : Promise.resolve(undefined)
+  ]).then(function (res) {
+    var parts = [];
+    var learned = relevantLearned(text);
+    if (learned.length) {
+      parts.push('【最優先：スタッフが修正した正しい回答】\n似た質問には、他の情報よりもこの回答内容を優先して答えること。\n' +
+        learned.map(function (qa) { return 'Q: ' + qa.question + '\nA: ' + qa.answer; }).join('\n\n'));
+    }
+    if (clientsData.length) {
+      parts.push('【取引先情報】\n' + clientsData.map(function (c) {
+        var s = '■' + c.name + (c.formal ? '（' + c.formal + '）' : '');
+        if (c.shipName) s += '\n  発送先：' + c.shipName;
+        if (c.zip || c.address) s += '\n  住所：' + (c.zip ? '〒' + c.zip + ' ' : '') + (c.address || '');
+        if (c.contact) s += '\n  担当者：' + c.contact;
+        if (c.phone) s += '\n  電話：' + c.phone;
+        if (c.product) s += '\n  商品：' + c.product;
+        if (c.memo) s += '\n  発送方法・注意事項：' + c.memo;
+        return s;
+      }).join('\n'));
+    }
+    if (res[0] !== undefined) {
+      if (res[0] === null) parts.push('【製造日報】データを読み込めませんでした（接続エラー）。その旨を伝えること。');
+      else if (productName) parts.push(res[0].length ? '【' + productName + 'の製造履歴（新しい順・製造日報より）】\n' + formatNippo(res[0], productName) : '【製造日報】「' + productName + '」を含む製造記録は見つかりませんでした。');
+      else parts.push(res[0].length ? '【製造日報（' + nippoInfo.label + '）】\n' + formatNippo(res[0]) : '【製造日報】' + nippoInfo.label + 'の製造日報はありません。');
+    }
+    if (res[1] !== undefined) {
+      var label = (shipOnly ? '出荷予定' : 'スケジュール') + '（' + schedInfo.label + (personName ? '・' + personName : '') + '）';
+      if (res[1] === null) parts.push('【スケジュール】データを読み込めませんでした（接続エラー）。その旨を伝えること。');
+      else parts.push(res[1].length ? '【' + label + '】\n' + formatSchedules(res[1]) : '【' + label + '】該当する予定はありません。');
+    }
+    parts.push('【今日の日付】' + todayStr());
+    return SYSTEM_PROMPT_BASE + '\n\n' + parts.join('\n\n');
+  });
 }
 
 function sendMessage() {
-  var inputBox = document.getElementById('inputBox');
-  var sendBtn = document.getElementById('sendBtn');
-  var text = inputBox.value.trim();
+  var box = $('inputBox');
+  var text = box.value.trim();
   if (!text || isLoading) return;
-  inputBox.value = ''; inputBox.style.height = 'auto';
-  isLoading = true; sendBtn.disabled = true;
+  var key = getApiKey();
+  if (!key) {
+    var k = prompt('Gemini APIキーを入力してください（この端末に保存されます。管理→設定からも変更できます）');
+    if (!k || !k.trim()) return;
+    lsSet('gemini_api_key', k.trim());
+    key = k.trim();
+  }
+  box.value = ''; box.style.height = 'auto';
+  setBusy(true);
   addMessage('user', text);
-  messages.push({role:'user', content:text});
+  messages.push({role: 'user', content: text});
+  if (messages.length > MAX_HISTORY) messages = messages.slice(-MAX_HISTORY);
   showTyping();
 
-  var API_KEY = localStorage.getItem('gemini_api_key') || '';
-  if (!API_KEY) {
+  buildContext(text).then(function (systemPrompt) {
+    return callGemini({
+      system_instruction: {parts: [{text: systemPrompt}]},
+      contents: messages.map(function (m) { return {role: m.role === 'assistant' ? 'model' : 'user', parts: [{text: m.content}]}; })
+    }, key);
+  }).then(function (r) {
     removeTyping();
-    var key = prompt('Gemini APIキーを入力してください（一度入力すると保存されます）：');
-    if (!key) { isLoading = false; sendBtn.disabled = false; return; }
-    localStorage.setItem('gemini_api_key', key.trim());
-    API_KEY = key.trim();
-    showTyping();
-  }
-
-  var nippoKeywords = ['製造','日報','今日','本日','昨日','今週','先週','今月','先月','バッチ','作業','担当','数量','何袋','何を作','とりめし','カレー','生産','過去','最近','これまで','一覧','記録','いつ作','いつ製造'];
-  var isNippoQuery = nippoKeywords.some(function(k) { return text.includes(k); });
-
-  // 商品名検索パターン：「〇〇はいつ製造した？」「〇〇の製造日は？」
-  var productSearchMatch = text.match(/(.+?)(?:はいつ|の製造日|を最後に製造|を製造したの|の製造履歴|はいつ作|を作った)/);
-  var searchProductName = productSearchMatch ? productSearchMatch[1].trim() : null;
-
-  var dateInfo = isNippoQuery ? parseDateFromText(text) : null;
-
-  var nippoPromise;
-  if (searchProductName && !dateInfo) {
-    // 商品名で全期間検索
-    nippoPromise = searchNippoByProduct(searchProductName);
-  } else if (!isNippoQuery) {
-    nippoPromise = Promise.resolve([]);
-  } else if (dateInfo && dateInfo.type === 'single') {
-    nippoPromise = fetchNippoData(dateInfo.date, null, null, searchProductName);
-  } else if (dateInfo && dateInfo.type === 'range') {
-    nippoPromise = fetchNippoData(null, dateInfo.from, dateInfo.to, searchProductName);
-  } else {
-    nippoPromise = fetchNippoData(null, null, null, searchProductName);
-  }
-
-  var scheduleKeywords = ['スケジュール','予定','出荷','納期','いつ','計画','今週','来週','今月','来月','月','日','出荷日','製造日','発送'];
-  var isScheduleQuery = scheduleKeywords.some(function(k) { return text.includes(k); });
-  var scheduleDateInfo = isScheduleQuery ? parseDateFromText(text) : null;
-
-  var isShipQuery = text.includes('出荷') || text.includes('発送') || text.includes('納期');
-
-  // 担当者名を検出
-  var personName = null;
-  if (isScheduleQuery) {
-    var allPersonNames = clientsData.map(function(c) { return c.name; });
-    // スタッフ名を直接テキストから検索（既知の名前）
-    var knownStaff = ['養父', '日高', '福士', '山田福士'];
-    knownStaff.forEach(function(name) {
-      if (text.includes(name)) personName = name;
-    });
-  }
-  var schedulePromise;
-  if (!isScheduleQuery) {
-    schedulePromise = Promise.resolve([]);
-  } else if (isShipQuery && scheduleDateInfo && scheduleDateInfo.type === 'single') {
-    schedulePromise = fetchScheduleByShipDate(scheduleDateInfo.date, null, null);
-  } else if (isShipQuery && scheduleDateInfo && scheduleDateInfo.type === 'range') {
-    schedulePromise = fetchScheduleByShipDate(null, scheduleDateInfo.from, scheduleDateInfo.to);
-  } else if (isShipQuery) {
-    // 出荷クエリでデフォルトは今日から2ヶ月先
-    var from = getTodayStr();
-    var to = new Date(); to.setMonth(to.getMonth()+2);
-    schedulePromise = fetchScheduleByShipDate(null, from, to.toISOString().slice(0,10));
-  } else if (scheduleDateInfo && scheduleDateInfo.type === 'single') {
-    schedulePromise = fetchScheduleData(scheduleDateInfo.date, null, null, personName);
-  } else if (scheduleDateInfo && scheduleDateInfo.type === 'range') {
-    schedulePromise = fetchScheduleData(null, scheduleDateInfo.from, scheduleDateInfo.to, personName);
-  } else {
-    var from = getTodayStr();
-    var to = new Date(); to.setMonth(to.getMonth()+1);
-    schedulePromise = fetchScheduleData(null, from, to.toISOString().slice(0,10), personName);
-  }
-
-  Promise.all([nippoPromise, schedulePromise]).then(function(results) {
-    var nippoReports = results[0];
-    var scheduleData = results[1];
-    var systemPrompt = SYSTEM_PROMPT_BASE;
-    // 学習済みQ&Aを照合して追加
-    var learned = findLearnedAnswer(text);
-    if (learned) {
-      systemPrompt += '\n\n【重要：以前修正された回答】\nQ: ' + learned.question + '\nA: ' + learned.answer + '\n上記の質問に近い場合は必ずこの回答を参考にしてください。';
-    }
-    if (clientsData.length > 0) {
-      systemPrompt += '\n\n【取引先情報】\n';
-      clientsData.forEach(function(c) {
-        systemPrompt += '\n■ ' + c.name + (c.formal ? '（' + c.formal + '）' : '') + '\n';
-        if (c.shipName) systemPrompt += '  発送先：' + c.shipName + '\n';
-        if (c.zip || c.address) systemPrompt += '  住所：〒' + (c.zip||'') + ' ' + (c.address||'') + '\n';
-        if (c.contact) systemPrompt += '  担当者：' + c.contact + '\n';
-        if (c.phone) systemPrompt += '  電話番号：' + c.phone + '\n';
-        if (c.product) systemPrompt += '  商品：' + c.product + '\n';
-        if (c.memo) systemPrompt += '  発送方法・注意事項：' + c.memo + '\n';
-      });
-    }
-    if (searchProductName && !dateInfo) {
-      // 商品名検索結果
-      if (nippoReports.length > 0) {
-        var productResultText = '【' + searchProductName + '】の製造履歴（新しい順）\n';
-        nippoReports.forEach(function(r) {
-          productResultText += r.date + '　担当：' + (r.author||'不明') + '　' + r.batches.join('、') + '\n';
-        });
-        systemPrompt += '\n\n' + productResultText;
-      } else {
-        systemPrompt += '\n\n【' + searchProductName + '】の製造記録は見つかりませんでした。';
-      }
-    } else if (isNippoQuery && nippoReports.length > 0) {
-      var dateLabel = dateInfo ? (dateInfo.type === 'single' ? dateInfo.date : dateInfo.type === 'range' ? dateInfo.from + '〜' + dateInfo.to : '直近') : '直近';
-      systemPrompt += '\n\n【製造日報（' + dateLabel + '）】\n' + formatNippoForAI(nippoReports);
-    } else if (isNippoQuery && nippoReports.length === 0) {
-      systemPrompt += '\n\n【製造日報】該当期間の製造日報データはありませんでした。';
-    }
-    if (isScheduleQuery && scheduleData.length > 0) {
-      var schedLabel = scheduleDateInfo ? (scheduleDateInfo.type === 'single' ? scheduleDateInfo.date : scheduleDateInfo.type === 'range' ? scheduleDateInfo.from + '〜' + scheduleDateInfo.to : '今後の予定') : '今後の予定';
-      systemPrompt += '\n\n【スケジュール（' + schedLabel + '）】\n' + formatScheduleForAI(scheduleData);
-    } else if (isScheduleQuery && scheduleData.length === 0) {
-      systemPrompt += '\n\n【スケジュール】該当期間のスケジュールデータはありませんでした。';
-    }
-
-    var geminiContents = messages.map(function(m) {
-      return {role: m.role === 'assistant' ? 'model' : 'user', parts: [{text: m.content}]};
-    });
-
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({system_instruction: {parts: [{text: systemPrompt}]}, contents: geminiContents})
-    });
-  }).then(function(response) {
-    return response.json();
-  }).then(function(data) {
+    addMessage('bot', r.text, text);
+    messages.push({role: 'assistant', content: r.text});
+  }).catch(function (e) {
     removeTyping();
-    if (data.error) { addMessage('bot', 'エラー：' + data.error.message); }
-    else {
-      var reply = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || 'うまく回答できませんでした。もう一度試してみてください。';
-      addMessage('bot', reply, text);
-      messages.push({role:'assistant', content:reply});
-    }
-    isLoading = false; document.getElementById('sendBtn').disabled = false; document.getElementById('inputBox').focus();
-  }).catch(function(err) {
-    removeTyping();
-    addMessage('bot', '接続エラーが発生しました。しばらくしてからもう一度お試しください。');
-    console.error(err);
-    isLoading = false; document.getElementById('sendBtn').disabled = false; document.getElementById('inputBox').focus();
+    messages.pop(); // 失敗した質問は履歴から外す
+    addMessage('bot', (e && e.message) || '接続エラーが発生しました。しばらくしてからもう一度お試しください。', null, true);
+    if (e && /Failed to fetch|NetworkError/.test(e.message)) console.error(e);
+  }).then(function () { setBusy(false); });
+}
+function resetChat() {
+  if (messages.length && !confirm('会話をリセットしますか？')) return;
+  messages = [];
+  $('chatArea').innerHTML = '<div class="intro-card">エニクックのことについて、気軽に質問してみてください 😊</div>';
+}
+
+/* ================= 管理画面 ================= */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('active', t.dataset.tab === tab); });
+  document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('visible', s.id === 'screen-' + tab); });
+  if (tab === 'settings') updateModelInfo();
+  window.scrollTo(0, 0);
+}
+function openAdmin() {
+  if ($('tabBar').classList.contains('visible')) { $('tabBar').classList.remove('visible'); switchTab('chat'); return; }
+  $('pinInput').value = ''; $('pinError').textContent = '';
+  $('pinOverlay').classList.add('visible');
+  setTimeout(function () { $('pinInput').focus(); }, 100);
+}
+function checkPin() {
+  if ($('pinInput').value !== ADMIN_PIN) { $('pinError').textContent = 'PINコードが違います'; return; }
+  $('pinOverlay').classList.remove('visible');
+  $('tabBar').classList.add('visible');
+  switchTab('clients');
+  loadClients(); loadLearnedQA();
+}
+function updateModelInfo() {
+  $('currentModel').textContent = lsGet('gemini_model') || '（まだ未使用）';
+  $('modelList').textContent = modelCandidates().join(' → ');
+  var key = getApiKey();
+  $('apiKeyInput').placeholder = key ? '保存済み（' + key.slice(0, 4) + '…' + key.slice(-4) + '）' : 'APIキーを貼り付け';
+  $('appVersion').textContent = APP_VERSION;
+}
+function saveKey() {
+  var v = $('apiKeyInput').value.trim();
+  if (!v) { setStatus('keyStatus', 'APIキーを入力してください', false); return; }
+  lsSet('gemini_api_key', v); $('apiKeyInput').value = '';
+  setStatus('keyStatus', '保存しました', true); updateModelInfo();
+}
+function testKey() {
+  var key = $('apiKeyInput').value.trim() || getApiKey();
+  if (!key) { setStatus('keyStatus', 'APIキーが未設定です', false); return; }
+  setStatus('keyStatus', 'テスト中…');
+  callGemini({contents: [{role: 'user', parts: [{text: '「OK」とだけ返してください'}]}]}, key)
+    .then(function (r) { setStatus('keyStatus', '正常に動作しています（使用モデル：' + r.model + '）', true); })
+    .catch(function (e) { setStatus('keyStatus', e.message, false); });
+}
+function clearKey() {
+  if (!confirm('この端末のAPIキーを削除しますか？')) return;
+  lsDel('gemini_api_key'); setStatus('keyStatus', '削除しました', true); updateModelInfo();
+}
+function refreshModels() {
+  var key = getApiKey();
+  if (!key) { setStatus('modelStatus', '先にAPIキーを設定してください', false); return; }
+  setStatus('modelStatus', '取得中…');
+  Object.keys(localStorage).forEach(function (k) { if (k.indexOf('gemini_dead_') === 0) lsDel(k); });
+  fetchModelList(key).then(function (list) {
+    setStatus('modelStatus', list.length + '件のモデルを取得しました', true); updateModelInfo();
+  }).catch(function (e) { setStatus('modelStatus', '取得できませんでした：' + e.message, false); });
+}
+// キャッシュとService Workerを消して最新版を読み込む
+function forceUpdate() {
+  var tasks = [];
+  if ('serviceWorker' in navigator) tasks.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }));
+  if (window.caches) tasks.push(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }));
+  Promise.all(tasks).catch(function () {}).then(function () {
+    location.replace(location.pathname + '?v=' + Date.now());
   });
 }
 
-// イベントリスナー
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
-document.getElementById('adminBtnEl').addEventListener('click', openAdmin);
-document.getElementById('tabChatEl').addEventListener('click', function() { switchTab('chat'); });
-document.getElementById('tabAdminEl').addEventListener('click', function() { switchTab('admin'); });
-document.getElementById('saveClientBtn').addEventListener('click', saveClient);
-document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
-document.getElementById('csvFileInput').addEventListener('change', importCSV);
-document.getElementById('pinBtnEl').addEventListener('click', checkPin);
-document.getElementById('pinInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') checkPin(); });
-document.getElementById('inputBox').addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+/* ================= イベント ================= */
+$('sendBtn').onclick = sendMessage;
+$('inputBox').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 140) + 'px'; });
+$('inputBox').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendMessage(); } });
+$('resetChatBtn').onclick = resetChat;
+$('adminBtn').onclick = openAdmin;
+$('pinOkBtn').onclick = checkPin;
+$('pinCancelBtn').onclick = function () { $('pinOverlay').classList.remove('visible'); };
+$('pinInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') checkPin(); });
+document.querySelectorAll('.tab').forEach(function (t) { t.onclick = function () { switchTab(t.dataset.tab); }; });
+$('saveClientBtn').onclick = saveClient;
+$('cancelEditBtn').onclick = clearForm;
+$('exportCsvBtn').onclick = exportCSV;
+$('csvFileInput').addEventListener('change', importCSV);
+$('deleteAllBtn').onclick = deleteAllClients;
+$('clientSearch').addEventListener('input', renderClients);
+$('clientList').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.edit) editClient(b.dataset.edit);
+  if (b.dataset.del) deleteClient(b.dataset.del);
 });
-document.getElementById('inputBox').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+$('learnedList').addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-del-learned]'); if (!b) return;
+  if (!confirm('この学習した回答を削除しますか？')) return;
+  db.collection('learnedQA').doc(b.dataset.delLearned).delete().then(loadLearnedQA).catch(function (err) { alert('削除に失敗しました：' + err.message); });
 });
+$('saveKeyBtn').onclick = saveKey;
+$('testKeyBtn').onclick = testKey;
+$('clearKeyBtn').onclick = clearKey;
+$('refreshModelsBtn').onclick = refreshModels;
+$('forceUpdateBtn').onclick = forceUpdate;
 
+/* ================= 起動 ================= */
 loadClients();
-</script>
-<script>
+loadLearnedQA();
+loadPersons();
+updateModelInfo();
+
+// Service Worker：常に最新を取りに行く設定で登録し、新しい版が入ったら一度だけ再読み込み
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').then(function(reg) {
-      console.log('SW registered');
-    }).catch(function(e) { console.warn('SW error:', e); });
-  });
+  navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(function (reg) { reg.update(); }).catch(function (e) { console.warn('SW登録エラー', e); });
+  var reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function () { if (reloaded) return; reloaded = true; location.reload(); });
 }
 </script>
 </body>
